@@ -1,1 +1,15 @@
-[]
+[
+  {
+    "tag": "v0.1.0",
+    "version": "0.1.0",
+    "name": "PayrollRTI 0.1.0",
+    "published_at": "2026-10-27T17:47:49Z",
+    "html_url": "https://github.com/seatofthepants-net/payrollrti/releases/tag/v0.1.0",
+    "body": "## What's changed\n\n- Restore HMRC's list of affected macOS versions (4d632d2)\n- Scope the BPT launch problem to macOS 27 Golden Gate (954985f)\n- Remove placeholder update-banner screenshot (d606490)\n- Name not-installed marketing shots bpt-not-installed-* (8b503d7)\n- Add marketing screenshots (159c16f)\n- Add scripted marketing screenshots (c3afec1)\n- Document BPT start-up steps, backups and the fresh-install error (45980a1)\n- Shut down cleanly on SIGTERM, SIGHUP and SIGINT (e872655)\n- Run BPT's database setup and exit backup around the server (433edef)\n- Read Basic PAYE Tools' full version from CFBundleVersion (45a6b79)\n- Describe signing account as seatofthepants.net Ltd (f4d747d)\n- Update GitHub Actions to Node 24 versions (ac2adce)\n- Add README with install, troubleshooting and release setup (9b722a7)\n- Add CI workflow and format script (c395d2f)\n- Add release pipeline (505c92f)\n- Add app icon and DMG background (4d4ee5d)\n- Apply swift-format and SwiftLint fixes (1ed00bc)\n- Add stub BPT and debug snapshots for smoke testing (286a898)\n- Add main window, menu-bar status item and settings (2918a7f)\n- Embed BPT in a WKWebView with browser behaviours it relies on (e882676)\n- Check GOV.UK for newer Basic PAYE Tools releases (3ef779f)\n- Spawn and supervise the rti server (db6aa2a)\n- Locate Basic PAYE Tools and read its version (4afbb7a)\n- Scaffold SwiftUI macOS app project (df06886)\n\nRequires HMRC's free [Basic PAYE Tools](https://www.gov.uk/basic-paye-tools) installed in /Applications.\n",
+    "dmg": {
+      "name": "PayrollRTI-0.1.0.dmg",
+      "url": "https://github.com/seatofthepants-net/payrollrti/releases/download/v0.1.0/PayrollRTI-0.1.0.dmg",
+      "size": 632275
+    }
+  }
+]

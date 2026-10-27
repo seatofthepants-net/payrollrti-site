@@ -1,5 +1,7 @@
 {
   "total": 0,
-  "byVersion": {},
-  "updatedAt": "2026-10-27T16:38:40.329Z"
+  "byVersion": {
+    "0.1.0": 0
+  },
+  "updatedAt": "2026-10-27T17:52:58.133Z"
 }
