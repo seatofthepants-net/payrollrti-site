@@ -1,5 +1,18 @@
 [
   {
+    "tag": "v0.1.1",
+    "version": "0.1.1",
+    "name": "PayrollRTI 0.1.1",
+    "published_at": "2026-10-27T19:27:43Z",
+    "html_url": "https://github.com/seatofthepants-net/payrollrti/releases/tag/v0.1.1",
+    "body": "## What's changed\n\n- Build a signed, notarised DMG on every push to main (9800e11)\n- Stop repeat clicks cancelling a restore; show progress while it runs (8b49197)\n- Show progress while BPT pages load and report failed loads (a71668c)\n\nRequires HMRC's free [Basic PAYE Tools](https://www.gov.uk/basic-paye-tools) installed in /Applications.\n\n**Full changelog:** https://github.com/seatofthepants-net/payrollrti/compare/v0.1.0...v0.1.1\n",
+    "dmg": {
+      "name": "PayrollRTI-0.1.1.dmg",
+      "url": "https://github.com/seatofthepants-net/payrollrti/releases/download/v0.1.1/PayrollRTI-0.1.1.dmg",
+      "size": 651277
+    }
+  },
+  {
     "tag": "v0.1.0",
     "version": "0.1.0",
     "name": "PayrollRTI 0.1.0",
