@@ -27,6 +27,7 @@ const csv = readFileSync(join(DATA, "downloads.csv"), "utf8");
 const latest = releases[0] || null;
 const version = latest?.version || null;
 const downloadUrl = latest?.dmg?.url || LATEST_FALLBACK;
+const releaseUrl = latest?.html_url || LATEST_FALLBACK;
 const today = new Date().toISOString().slice(0, 10);
 
 // ---------- helpers ----------
@@ -213,7 +214,7 @@ const home = head({
 <p class="lede">PayrollRTI opens Basic PAYE Tools in a proper Mac window with one double-click. You do not need to type any commands or keep extra windows open.</p>
 <div class="actions">
 <a class="btn btn-gold" href="${esc(downloadUrl)}">${ICON_DOWNLOAD}Download for Mac</a>
-<a class="btn btn-ghost" href="${REPO}">See the source code</a>
+<a class="btn btn-ghost" href="${esc(releaseUrl)}">Get it from GitHub Releases</a>
 </div>
 <p class="meta">${versionBits}</p>
 <div class="hero-shot">${picture("basic-paye-tools-on-mac", [1000, 2000], "HMRC's Basic PAYE Tools home page open in its own Mac window, run by PayrollRTI", "(max-width: 1120px) 100vw, 1080px", 'fetchpriority="high"')}</div>
@@ -353,7 +354,10 @@ ${faqHtml}
 <div class="wrap">
 <h2 class="h2" id="cta-title">Get back to running payroll</h2>
 <p class="sub">Free to download. No account, no sign-up.</p>
+<div class="actions">
 <a class="btn btn-gold" href="${esc(downloadUrl)}">${ICON_DOWNLOAD}Download for Mac</a>
+<a class="btn btn-ghost" href="${esc(releaseUrl)}">Get it from GitHub Releases</a>
+</div>
 <p class="meta">${ctaMeta}</p>
 </div>
 </section>
@@ -369,7 +373,7 @@ const releaseHtml = releases.length
 <time datetime="${esc(r.published_at)}">${longDate(r.published_at)}</time>
 </div>
 <div class="notes">${markdown(r.body) || "<p>No notes for this release.</p>"}</div>
-${i === 0 && r.dmg ? `<a class="btn btn-gold btn-sm" href="${esc(r.dmg.url)}">${ICON_DOWNLOAD}Download this version</a>` : `<p class="more"><a href="${esc(r.html_url)}">See this release on GitHub</a></p>`}
+${i === 0 && r.dmg ? `<a class="btn btn-gold btn-sm" href="${esc(r.dmg.url)}">${ICON_DOWNLOAD}Download this version</a>\n` : ""}<p class="more"><a href="${esc(r.html_url)}">See this release on GitHub</a></p>
 </article>`).join("\n")
   : `<div class="empty"><p>Release notes will appear here shortly. In the meantime, <a href="${REPO}/releases">see all releases on GitHub</a>.</p></div>`;
 
