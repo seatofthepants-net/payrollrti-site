@@ -1,0 +1,31 @@
+[
+  {
+    "q": "Why won't Basic PAYE Tools open on my Mac?",
+    "a": "Since macOS Sequoia, the part of Basic PAYE Tools that runs in the background no longer starts by itself. HMRC's help page explains a workaround using the Terminal app. PayrollRTI does this for you, so BPT opens with a double-click again."
+  },
+  {
+    "q": "Do I still need to use the Terminal?",
+    "a": "No. Once PayrollRTI is installed, you do not need to open the Terminal, type commands or press Ctrl+C. Open PayrollRTI and Basic PAYE Tools appears in its own window."
+  },
+  {
+    "q": "Is this an official HMRC app?",
+    "a": "No. PayrollRTI is a free community tool. HMRC made Basic PAYE Tools, and PayrollRTI simply opens it for you. HMRC has not made or endorsed PayrollRTI."
+  },
+  {
+    "q": "Is my payroll data safe?",
+    "a": "Yes. Everything runs on your own Mac. PayrollRTI does not send your data anywhere. Your payroll goes to HMRC through Basic PAYE Tools, in exactly the same way as before.",
+    "open": true
+  },
+  {
+    "q": "Does it work on older Intel Macs and newer Apple silicon Macs?",
+    "a": "Yes, it works on both."
+  },
+  {
+    "q": "Which versions of macOS does it work on?",
+    "a": "macOS Sequoia (version 15), macOS Tahoe (version 26) and later. To check your version, open the Apple menu in the top-left corner of your screen and choose About This Mac."
+  },
+  {
+    "q": "What if something goes wrong?",
+    "a": "You can <a href=\"https://github.com/seatofthepants-net/payrollrti/issues\">report a problem on GitHub</a>. This is a free tool looked after by volunteers, so we cannot promise a reply time. For problems with your payroll itself, contact HMRC."
+  }
+]
