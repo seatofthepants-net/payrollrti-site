@@ -1,7 +1,7 @@
 [
   {
-    "q": "Why won't Basic PAYE Tools open on my Mac?",
-    "a": "Since macOS Sequoia, the part of Basic PAYE Tools that runs in the background no longer starts by itself. HMRC's help page explains a workaround using the Terminal app. PayrollRTI does this for you, so BPT opens with a double-click again."
+    "q": "Why won’t Basic PAYE Tools open on my Mac?",
+    "a": "Since macOS Sequoia, the part of Basic PAYE Tools that runs in the background no longer starts by itself. HMRC’s help page explains a workaround using the Terminal app. PayrollRTI does this for you, so BPT opens with a double-click again."
   },
   {
     "q": "Do I still need to use the Terminal?",

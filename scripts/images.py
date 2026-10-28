@@ -8,6 +8,9 @@ WebP/AVIF files, the link-preview image and the icons into src/images/.
     pip install pillow   # 11.2 or later for AVIF
     python3 scripts/images.py
 
+The DMG window is a hand-taken macOS screenshot (window shadow included) kept
+in scripts/sources/, since it shows the installer rather than the app.
+
 Commit the outputs. The site build only copies them.
 """
 import io
@@ -18,6 +21,7 @@ from PIL import Image, ImageDraw, ImageFont, features
 
 RAW = "https://raw.githubusercontent.com/seatofthepants-net/payrollrti/main/docs/marketing/"
 OUT = pathlib.Path(__file__).resolve().parent.parent / "src" / "images"
+SOURCES = pathlib.Path(__file__).resolve().parent / "sources"
 OUT.mkdir(parents=True, exist_ok=True)
 
 GREEN = (13, 53, 44)
@@ -93,6 +97,8 @@ def main():
         W, H = im.size
         im = im.crop((round(box[0] * W), round(box[1] * H), round(box[2] * W), round(box[3] * H)))
         save_web(im, stem, [600, 1200])
+
+    save_web(Image.open(SOURCES / "dmg-window.png").convert("RGBA"), "dmg-window", [600, 1200])
 
     # Link preview: hero window on the site green.
     og = Image.new("RGB", (1200, 630), GREEN)

@@ -48,6 +48,7 @@ function inline(md) {
   s = s.replace(/`([^`]+)`/g, "<code>$1</code>");
   s = s.replace(/\*\*([^*]+)\*\*/g, "<strong>$1</strong>");
   s = s.replace(/\[([^\]]+)\]\((https?:\/\/[^)\s]+)\)/g, '<a href="$2">$1</a>');
+  s = s.replace(/(^|[\s(])(https?:\/\/[^\s<]*[^\s<.,;:)])/g, '$1<a href="$2">$2</a>');
   return s;
 }
 // Small Markdown subset for GitHub release notes: headings, lists, paragraphs, links, bold, code.
@@ -72,7 +73,9 @@ function markdown(md) {
 // ---------- assets ----------
 rmSync(DIST, { recursive: true, force: true });
 mkdirSync(DIST, { recursive: true });
-const css = readFileSync(join(SRC, "styles.css"));
+// styles.css pulls in tokens.css and base.css with @import; inline them so the page loads one hashed file.
+const inlineImports = (file) => readFileSync(file, "utf8").replace(/@import url\("\.\/([\w-]+\.css)"\);\n?/g, (_, name) => inlineImports(join(SRC, name)) + "\n");
+const css = inlineImports(join(SRC, "styles.css"));
 const cssName = `styles.${createHash("sha256").update(css).digest("hex").slice(0, 10)}.css`;
 writeFileSync(join(DIST, cssName), css);
 cpSync(join(SRC, "fonts"), join(DIST, "fonts"), { recursive: true });
@@ -102,13 +105,14 @@ function head({ title, description, path, extra = "", noindex = false }) {
 <meta property="og:image" content="${SITE}/images/og.png">
 <meta property="og:image:width" content="1200">
 <meta property="og:image:height" content="630">
-<meta property="og:image:alt" content="HMRC's Basic PAYE Tools running in its own Mac window">
+<meta property="og:image:alt" content="HMRC’s Basic PAYE Tools running in its own Mac window">
 <meta property="og:locale" content="en_GB">
 <meta name="twitter:card" content="summary_large_image">
 <meta name="theme-color" content="#0D352C">
 <link rel="icon" href="/favicon.svg" type="image/svg+xml">
 <link rel="apple-touch-icon" href="/apple-touch-icon.png">
-<link rel="preload" href="/fonts/inter-latin-var.woff2" as="font" type="font/woff2" crossorigin>
+<link rel="preload" href="/fonts/rethink-sans-latin-var.woff2" as="font" type="font/woff2" crossorigin>
+<link rel="preload" href="/fonts/public-sans-latin-var.woff2" as="font" type="font/woff2" crossorigin>
 <link rel="stylesheet" href="/${cssName}">
 <link rel="alternate" type="text/markdown" href="/llms.txt" title="Summary for AI assistants">
 ${extra}</head>
@@ -140,7 +144,7 @@ const footer = `<footer class="site-footer">
 <p class="name">PayrollRTI</p>
 <p>Made by <a href="${SOTP}">seatofthepants.net</a>. Free and open source under the MIT licence.</p>
 <p>This site uses no cookies and no tracking.</p>
-<p class="small">PayrollRTI is not made, endorsed or supported by HMRC. Basic PAYE Tools is HMRC's software.</p>
+<p class="small">PayrollRTI is not made, endorsed or supported by HMRC. Basic PAYE Tools is HMRC’s software.</p>
 </div>
 <ul>
 <li><a href="${REPO}">Source code on GitHub</a></li>
@@ -156,15 +160,16 @@ const footer = `<footer class="site-footer">
 
 function picture(stem, widths, alt, sizes, attrs = "") {
   const [w1, w2] = widths;
-  const dims = { "basic-paye-tools-on-mac": [2000, 1297], starting: [1200, 396], "bpt-not-installed": [1200, 509] }[stem];
+  const dims = { "basic-paye-tools-on-mac": [2000, 1297], starting: [1200, 396], "bpt-not-installed": [1200, 509], "dmg-window": [1200, 796] }[stem];
   const srcset = (ext) => `/images/${stem}-${w1}.${ext} ${w1}w, /images/${stem}-${w2}.${ext} ${w2}w`;
   const avif = existsSync(join(SRC, "images", `${stem}-${w1}.avif`)) ? `<source type="image/avif" srcset="${srcset("avif")}" sizes="${sizes}">` : "";
   return `<picture>${avif}<source type="image/webp" srcset="${srcset("webp")}" sizes="${sizes}"><img src="/images/${stem}-${w1}.webp" width="${dims[0]}" height="${dims[1]}" alt="${esc(alt)}" ${attrs}></picture>`;
 }
 
 // ---------- home ----------
-const versionBits = [version ? `Version ${esc(version)}` : null, "Works on macOS Sequoia, Tahoe and later", "Apple silicon and Intel", "Free"].filter(Boolean).join(" · ");
-const ctaMeta = [countText ? `Downloaded ${countText} times` : null, version ? `Version ${esc(version)}` : null, `<a href="/releases/">What's new</a>`].filter(Boolean).join(" · ");
+const metaList = (items) => items.filter(Boolean).map((item) => `<li>${item}</li>`).join("");
+const versionBits = metaList(["Free and open source", "Works on macOS Sequoia, Tahoe and later", "Apple silicon and Intel", version ? `Version ${esc(version)}` : null]);
+const ctaMeta = metaList([countText ? `Downloaded ${countText} times` : null, version ? `Version ${esc(version)}` : null, `<a href="/releases/">What’s new</a>`]);
 
 const faqHtml = faq.map((f) => `<details${f.open ? " open" : ""}>
 <summary>${esc(f.q)}<span class="plus" aria-hidden="true">+</span></summary>
@@ -200,7 +205,7 @@ const jsonld = {
 };
 
 const home = head({
-  title: "Run HMRC Basic PAYE Tools on a Mac (macOS Sequoia and later) — PayrollRTI",
+  title: "Run HMRC Basic PAYE Tools on a Mac (macOS Sequoia and later) | PayrollRTI",
   description: "Basic PAYE Tools not opening on your Mac? PayrollRTI is a free app that runs HMRC's BPT on macOS Sequoia, Tahoe and later with one double-click. No Terminal commands. Your data stays on your Mac.",
   path: "/",
   extra: `<script type="application/ld+json">${JSON.stringify(jsonld).replace(/</g, "\\u003c")}</script>\n`,
@@ -209,32 +214,30 @@ const home = head({
 <section class="hero" aria-labelledby="hero-title">
 <div class="wrap">
 <div class="app-icon" aria-hidden="true">£</div>
-<p class="eyebrow">Free and open source · For Mac</p>
-<h1 id="hero-title">Run HMRC's Basic PAYE Tools on your modern Mac. <span>Without the Terminal.</span></h1>
+<h1 id="hero-title">Run HMRC’s Basic PAYE Tools on your modern Mac.<br> Without the Terminal.</h1>
 <p class="lede">PayrollRTI opens Basic PAYE Tools in a proper Mac window with one double-click. You do not need to type any commands or keep extra windows open.</p>
 <div class="actions">
 <a class="btn btn-gold" href="${esc(downloadUrl)}">${ICON_DOWNLOAD}Download for Mac</a>
 <a class="btn btn-ghost" href="${esc(releaseUrl)}">Get it from GitHub Releases</a>
 </div>
-<p class="meta">${versionBits}</p>
-<div class="hero-shot">${picture("basic-paye-tools-on-mac", [1000, 2000], "HMRC's Basic PAYE Tools home page open in its own Mac window, run by PayrollRTI", "(max-width: 1120px) 100vw, 1080px", 'fetchpriority="high"')}</div>
+<ul class="meta">${versionBits}</ul>
+<div class="hero-shot">${picture("basic-paye-tools-on-mac", [1000, 2000], "HMRC’s Basic PAYE Tools home page open in its own Mac window, run by PayrollRTI", "(max-width: 1120px) 100vw, 1080px", 'fetchpriority="high"')}</div>
 </div>
 </section>
 
-<div class="notice"><p>PayrollRTI is a free community tool. It is not made or endorsed by HMRC. Basic PAYE Tools itself is HMRC's software.</p></div>
+<div class="notice"><p>PayrollRTI is a free community tool. It is not made or endorsed by HMRC. Basic PAYE Tools itself is HMRC’s software.</p></div>
 
 <section class="section" aria-labelledby="problem-title">
 <div class="wrap split">
 <div class="copy">
-<p class="kicker">The problem</p>
-<h2 class="h2" id="problem-title">Why Basic PAYE Tools won't open on newer Macs</h2>
-<p>Basic PAYE Tools (BPT) is HMRC's free software for employers with fewer than 10 employees. You use it to send your payroll to HMRC each time you pay your staff. This is called Real Time Information, or RTI.</p>
-<p>Since macOS Sequoia, BPT does not open properly on its own. HMRC's official fix asks you to open the Terminal app, type commands, keep that window open while you work, and press Ctrl+C when you have finished.</p>
-<p><a href="${HMRC_HELP}">Read HMRC's help page about this issue</a></p>
+<h2 class="h2" id="problem-title">Why Basic PAYE Tools won’t open on newer Macs</h2>
+<p>Basic PAYE Tools (BPT) is HMRC’s free software for employers with fewer than 10 employees. You use it to send your payroll to HMRC each time you pay your staff. This is called Real Time Information, or RTI.</p>
+<p>Since macOS Sequoia, BPT does not open properly on its own. HMRC’s official fix asks you to open the Terminal app, type commands, keep that window open while you work, and press Ctrl+C when you have finished.</p>
+<p><a href="${HMRC_HELP}">Read HMRC’s help page about this issue</a></p>
 </div>
 <div class="compare">
 <div class="card-dark">
-<p class="label">HMRC's workaround</p>
+<p class="label">HMRC’s workaround</p>
 <ol>
 <li>Open the Terminal app</li>
 <li>Type in a set of commands</li>
@@ -245,8 +248,7 @@ const home = head({
 <div class="card-light">
 <div class="app-icon" aria-hidden="true">£</div>
 <div>
-<p class="label">With PayrollRTI</p>
-<p class="big">Double-click PayrollRTI. That's it.</p>
+<p class="big">Double-click PayrollRTI. That’s it.</p>
 </div>
 </div>
 </div>
@@ -289,7 +291,7 @@ const home = head({
 <p class="sub center">It takes about a minute. You only need to do this once.</p>
 <ol class="steps">
 <li class="step">
-<div class="step-art" role="img" aria-label="The PayrollRTI download in your browser's downloads list">
+<div class="step-art" role="img" aria-label="The PayrollRTI download in your browser’s downloads list">
 <div class="mock mock-dl">
 <span class="t">Downloads</span>
 <div class="mock-row">
@@ -305,16 +307,7 @@ const home = head({
 </div>
 </li>
 <li class="step">
-<div class="step-art" role="img" aria-label="Dragging the PayrollRTI icon onto the Applications folder">
-<div class="mock mock-win">
-<div class="mock-title"><span class="dot r"></span><span class="dot y"></span><span class="dot g"></span></div>
-<div class="mock-drag">
-<div><span class="mock-app">£</span>PayrollRTI</div>
-<svg aria-hidden="true" width="40" height="20" viewBox="0 0 40 20" fill="none" stroke="#8A8F8B" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M2 10h34"/><path d="M29 3l7 7-7 7"/></svg>
-<div><span class="mock-folder">A</span>Applications</div>
-</div>
-</div>
-</div>
+<div class="step-art">${picture("dmg-window", [600, 1200], "The PayrollRTI disk image window, with an arrow from the PayrollRTI icon to the Applications folder and the words Drag PayrollRTI into Applications", "260px", 'class="step-capture" loading="lazy"')}</div>
 <div class="step-body">
 <span class="step-num">2</span>
 <h3>Drag it to Applications</h3>
@@ -331,10 +324,10 @@ const home = head({
 </li>
 </ol>
 <figure class="not-installed">
-${picture("bpt-not-installed", [600, 1200], "PayrollRTI screen saying Basic PAYE Tools isn't installed, with a Download from GOV.UK button and a Check Again button", "(max-width: 700px) 100vw, 520px", 'loading="lazy"')}
+${picture("bpt-not-installed", [600, 1200], "PayrollRTI screen saying Basic PAYE Tools isn’t installed, with a Download from GOV.UK button and a Check Again button", "(max-width: 700px) 100vw, 520px", 'loading="lazy"')}
 <figcaption>
-<p class="t">Don't have Basic PAYE Tools yet?</p>
-<p class="d">PayrollRTI will tell you. Select Download from GOV.UK, run HMRC's installer, then come back and select Check Again.</p>
+<p class="t">Don’t have Basic PAYE Tools yet?</p>
+<p class="d">PayrollRTI will tell you. Select Download from GOV.UK, run HMRC’s installer, then come back and select Check Again.</p>
 <p class="l"><a href="${HMRC_BPT}">Get Basic PAYE Tools from GOV.UK</a></p>
 </figcaption>
 </figure>
@@ -358,7 +351,7 @@ ${faqHtml}
 <a class="btn btn-gold" href="${esc(downloadUrl)}">${ICON_DOWNLOAD}Download for Mac</a>
 <a class="btn btn-ghost" href="${esc(releaseUrl)}">Get it from GitHub Releases</a>
 </div>
-<p class="meta">${ctaMeta}</p>
+<ul class="meta">${ctaMeta}</ul>
 </div>
 </section>
 
@@ -378,7 +371,7 @@ ${i === 0 && r.dmg ? `<a class="btn btn-gold btn-sm" href="${esc(r.dmg.url)}">${
   : `<div class="empty"><p>Release notes will appear here shortly. In the meantime, <a href="${REPO}/releases">see all releases on GitHub</a>.</p></div>`;
 
 const releasesPage = head({
-  title: "Release notes — PayrollRTI",
+  title: "Release notes | PayrollRTI",
   description: "What has changed in each version of PayrollRTI, the free app that runs HMRC's Basic PAYE Tools on modern Macs.",
   path: "/releases/",
 }) + header("/releases/") + `<main id="main" class="page">
@@ -389,7 +382,7 @@ const releasesPage = head({
 <div class="releases">
 ${releaseHtml}
 </div>
-<div class="callout"><p><strong>Looking for HMRC's own updates?</strong> PayrollRTI tells you when HMRC releases a new version of Basic PAYE Tools. You can also check the <a href="${HMRC_BPT}">Basic PAYE Tools page on GOV.UK</a>.</p></div>
+<div class="callout"><p><strong>Looking for HMRC’s own updates?</strong> PayrollRTI tells you when HMRC releases a new version of Basic PAYE Tools. You can also check the <a href="${HMRC_BPT}">Basic PAYE Tools page on GOV.UK</a>.</p></div>
 </div>
 </main>
 ` + footer;
@@ -407,21 +400,21 @@ function chart() {
   const max = Math.max(1, ...daily.map((d) => d.n));
   const bw = Math.min(28, (W - pad.l - pad.r) / daily.length);
   const y = (n) => pad.t + (H - pad.t - pad.b) * (1 - n / max);
-  const bars = daily.map((d, i) => `<rect x="${(pad.l + i * bw + 1).toFixed(1)}" y="${y(d.n).toFixed(1)}" width="${Math.max(1, bw - 2).toFixed(1)}" height="${(H - pad.b - y(d.n)).toFixed(1)}" rx="2" fill="#1D5A49"><title>${d.date}: ${d.n}</title></rect>`).join("");
-  const ticks = [0, Math.round(max / 2), max].map((t) => `<text x="${pad.l - 8}" y="${y(t) + 4}" text-anchor="end" font-size="12" fill="#4F5752">${t}</text><line x1="${pad.l}" x2="${W - pad.r}" y1="${y(t)}" y2="${y(t)}" stroke="#E2D9C4"/>`).join("");
-  const labels = `<text x="${pad.l}" y="${H - 8}" font-size="12" fill="#4F5752">${daily[0].date}</text><text x="${W - pad.r}" y="${H - 8}" text-anchor="end" font-size="12" fill="#4F5752">${daily.at(-1).date}</text>`;
+  const bars = daily.map((d, i) => `<rect class="bar" x="${(pad.l + i * bw + 1).toFixed(1)}" y="${y(d.n).toFixed(1)}" width="${Math.max(1, bw - 2).toFixed(1)}" height="${(H - pad.b - y(d.n)).toFixed(1)}" rx="2"><title>${d.date}: ${d.n}</title></rect>`).join("");
+  const ticks = [0, Math.round(max / 2), max].map((t) => `<text class="tick" x="${pad.l - 8}" y="${y(t) + 4}" text-anchor="end" font-size="12">${t}</text><line class="grid" x1="${pad.l}" x2="${W - pad.r}" y1="${y(t)}" y2="${y(t)}"/>`).join("");
+  const labels = `<text class="tick" x="${pad.l}" y="${H - 8}" font-size="12">${daily[0].date}</text><text class="tick" x="${W - pad.r}" y="${H - 8}" text-anchor="end" font-size="12">${daily.at(-1).date}</text>`;
   return `<svg viewBox="0 0 ${W} ${H}" role="img" aria-label="Downloads per day, ${daily[0].date} to ${daily.at(-1).date}. Highest day: ${max}.">${ticks}${bars}${labels}</svg>`;
 }
 const byVersion = Object.entries(stats.byVersion || {});
 const last7 = daily.slice(-7).reduce((a, d) => a + d.n, 0);
-const statsPage = head({ title: "Download numbers — PayrollRTI", description: "PayrollRTI download numbers.", path: "/stats/", noindex: true }) + header("/stats/") + `<main id="main" class="page">
+const statsPage = head({ title: "Download numbers | PayrollRTI", description: "PayrollRTI download numbers.", path: "/stats/", noindex: true }) + header("/stats/") + `<main id="main" class="page">
 <div class="wrap narrow">
 <p><a href="/">Back to PayrollRTI</a></p>
 <h1>Download numbers</h1>
 <p class="intro">Counted by GitHub for each release file. Includes repeat and automated downloads, so read it as a trend. ${stats.updatedAt ? `Updated ${longDate(stats.updatedAt)}.` : "Not updated yet."}</p>
 <div class="stat-grid">
 <div class="stat"><p class="n">${fmt(stats.total || 0)}</p><p class="l">Downloads in total</p></div>
-<div class="stat"><p class="n">${daily.length ? fmt(last7) : "–"}</p><p class="l">In the last 7 days</p></div>
+<div class="stat"><p class="n">${daily.length ? fmt(last7) : "None yet"}</p><p class="l">In the last 7 days</p></div>
 <div class="stat"><p class="n">${releases.length}</p><p class="l">Releases</p></div>
 </div>
 <div class="chart"><h2 class="chart-title">Downloads per day</h2>${chart()}</div>
@@ -435,10 +428,10 @@ const statsPage = head({ title: "Download numbers — PayrollRTI", description: 
 ` + footer;
 
 // ---------- 404 ----------
-const notFound = head({ title: "Page not found — PayrollRTI", description: "This page could not be found.", path: "/404.html", noindex: true }) + header("") + `<main id="main" class="notfound">
+const notFound = head({ title: "Page not found | PayrollRTI", description: "This page could not be found.", path: "/404.html", noindex: true }) + header("") + `<main id="main" class="notfound">
 <div class="wrap">
 <h1 class="h2">Page not found</h1>
-<p>The page you're looking for isn't here.</p>
+<p>The page you’re looking for isn’t here.</p>
 <p><a href="/">Go to the PayrollRTI home page</a></p>
 </div>
 </main>

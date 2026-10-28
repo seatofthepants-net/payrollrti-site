@@ -1,0 +1,28 @@
+:root {
+  --space-3xs: 2px; --space-2xs: 4px; --space-xs: 8px; --space-sm: 12px; --space-md: 16px; --space-lg: 24px; --space-xl: 40px; --space-2xl: 64px; --space-3xl: 96px; --space-4xl: 144px;
+  --text-xs: 0.8125rem; --text-sm: 0.875rem; --text-md: 1rem; --text-lg: 1.25rem; --text-xl: 1.5625rem; --text-2xl: 1.953rem; --text-3xl: 2.441rem;
+  --text-display-s: clamp(2.25rem, 4vw + 0.5rem, 3.75rem); --text-display: clamp(2.75rem, 5vw + 1rem, 5.25rem);
+  --text-section: clamp(2rem, 2.5vw + 1rem, 3.5rem); --text-title: clamp(1.25rem, 0.75vw + 0.875rem, 1.625rem); --text-lead: clamp(1.125rem, 0.35vw + 1rem, 1.375rem);
+  --ease-out: cubic-bezier(0.16, 1, 0.3, 1); --ease-in: cubic-bezier(0.7, 0, 0.84, 0); --ease-in-out: cubic-bezier(0.65, 0, 0.35, 1);
+  --dur-micro: 120ms; --dur-short: 220ms; --dur-long: 420ms;
+  --color-error: oklch(52% 0.19 27); --color-success: oklch(50% 0.12 150);
+  --container: 1208px; --gutter: 64px; --gap-columns: 32px; --section-gap-s: 120px; --section-gap: 144px; --section-gap-l: 176px;
+  --z-base: 1; --z-raised: 10; --z-dropdown: 100; --z-sticky: 200; --z-sticky-nav: 300; --z-modal: 400; --z-toast: 500; --z-tooltip: 600;
+  /* Brand: the app icon's green field and gold £, on cream paper. */
+  --color-paper: oklch(96.8% 0.014 89); --color-paper-2: oklch(93.2% 0.023 87); --color-paper-3: oklch(90.4% 0.025 89); --color-paper-raised: oklch(99.4% 0.007 89);
+  --color-ink: oklch(23.4% 0.007 164); --color-ink-2: oklch(38% 0.01 157); --color-muted: oklch(44.8% 0.013 158);
+  --color-rule: oklch(88.7% 0.03 88); --color-rule-soft: oklch(91.5% 0.022 89);
+  --color-accent: oklch(76.5% 0.139 78); --color-accent-hover: oklch(80.9% 0.126 78); --color-accent-ink: var(--color-ink);
+  --color-link: oklch(35.6% 0.059 171); --color-link-hover: oklch(29.8% 0.047 175);
+  --color-focus: oklch(42.3% 0.069 171); --color-focus-on-field: var(--color-accent);
+  --color-field: oklch(29.8% 0.047 175); --color-field-2: oklch(35.6% 0.059 171); --color-field-3: oklch(42.3% 0.069 171);
+  --color-field-hi: oklch(46.1% 0.078 167); --color-field-lo: oklch(33.2% 0.055 173);
+  --color-on-field: oklch(96.8% 0.014 89); --color-on-field-2: oklch(90.7% 0.013 160); --color-on-field-3: oklch(84.8% 0.019 161); --color-on-field-edge: oklch(66% 0.03 165);
+  --color-night: oklch(25% 0.016 172); --color-on-night: oklch(92.9% 0.008 165); --color-on-night-2: oklch(76.6% 0.014 165);
+  --color-tint: oklch(93.1% 0.022 163);
+  --font-display: "Rethink Sans", ui-sans-serif, system-ui, sans-serif; --font-body: "Public Sans", ui-sans-serif, system-ui, sans-serif; --font-outlier: Georgia, "Times New Roman", serif;
+  --display-weight: 800;
+  --radius-card: 14px; --radius-control: 10px; --radius-inner: 8px; --radius-tag: 4px; --radius-icon: 23%; --radius-pill: 999px; --rule-hair: 1px;
+  --shadow-card: 0 1px 2px oklch(20% 0.02 171 / 0.08), 0 10px 24px oklch(20% 0.02 171 / 0.10);
+  --tracking-display: -0.015em;
+}
