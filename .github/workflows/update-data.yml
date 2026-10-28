@@ -2,7 +2,7 @@ name: Update releases and download counts
 
 on:
   schedule:
-    - cron: "*/5 * * * *"   # TEMPORARY scheduler test; revert to "17 3 * * *"
+    - cron: "17 3 * * *"   # daily, 03:17 UTC
   workflow_dispatch:
   repository_dispatch:
     types: [payrollrti-release]
