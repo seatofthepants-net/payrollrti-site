@@ -680,26 +680,70 @@ const notFound = head({ title: "Page not found | PayrollRTI", description: "This
 ` + footer;
 
 // ---------- text files ----------
+// llms.txt: the facts an AI assistant needs, in plain Markdown. llms-full.txt adds every FAQ answer,
+// built from the same data as the pages so the two can't drift apart.
+// The beta section shows only while the newest pre-release is newer than the latest release.
+const betaIsCurrent = Boolean(beta && (!latest || beta.published_at > latest.published_at));
+const mdFromHtml = (html, base) => html
+  .replace(/<a href="([^"]+)">([^<]+)<\/a>/g, (_, href, text) => `[${text}](${href.startsWith("#") ? `${base}${href}` : href})`)
+  .replace(/<[^>]+>/g, "");
+const faqMarkdown = (list, base) => list.map((f) => `### ${f.q}\n\n${mdFromHtml(f.a, base)}`).join("\n\n");
+
+const llmsBeta = betaIsCurrent ? `
+## Beta: PayrollRTI ${beta.version} (pre-release for testers)
+- Choose how PayrollRTI runs Basic PAYE Tools: HMRC's Linux version run natively by PayrollRTI (recommended on Apple silicon), or HMRC's Mac app as before. Change it any time in Settings.
+- HMRC's Linux version: PayrollRTI downloads HMRC's Linux build from GOV.UK (about 190 MB), unpacks it, and runs it on a native Apple silicon Python runtime built into the app. It is the same Basic PAYE Tools program as the Mac app, packaged differently. HMRC's files are not modified or redistributed.
+- No Rosetta needed, so it is designed to keep working on macOS 28 and later, when Apple will remove Rosetta for apps.
+- Same screens, same calculations, same submissions to HMRC. Tested by the developer with real backups restored, P60s produced, and live submissions accepted by HMRC (a NINO verification request and a Full Payment Submission); a month's pay run gave identical submissions from both engines.
+- Both engines use the same payroll data in ~/HMRC/payetools-rti. Switching between engines of the same Basic PAYE Tools version is a restart. A newer version updates the database when it first starts; older versions can't open it afterwards, and PayrollRTI refuses to start a copy that is too old.
+- Backups: PayrollRTI saves a backup in Basic PAYE Tools' own format before downloading the Linux version and before starting a version that will update the database, in ~/HMRC/payetools-rti/backups. Basic PAYE Tools' "Restore your data" can read them.
+- Updates: PayrollRTI checks HMRC's own update feed. On the Linux engine it downloads new Basic PAYE Tools versions itself; on the Mac app engine it links to GOV.UK. PayrollRTI also updates itself from GitHub releases, and beta builds are offered later betas.
+- Needs an Apple silicon Mac (M1 or later) for the Linux engine. Intel Macs keep using HMRC's Mac app, which runs on them without Rosetta.
+- Beta advice: back up in Basic PAYE Tools first and keep a copy off the Mac; updates only go forward; install the matching version of HMRC's Mac app before switching back to it; run Basic PAYE Tools one way at a time.
+- Download the beta: ${betaDownloadUrl}
+- Beta page: ${SITE}/beta/
+` : "";
+
 const llms = `# PayrollRTI
 
-> Free, open-source Mac app that runs HMRC's Basic PAYE Tools (BPT) on macOS Sequoia (15), Tahoe (26) and later, without the Terminal workaround in HMRC's help page. Not made or endorsed by HMRC.
+> Free, open-source Mac app that runs HMRC's Basic PAYE Tools (BPT) on macOS Sequoia (15), Tahoe (26) and Golden Gate (27) without the Terminal workaround in HMRC's help page.${betaIsCurrent ? " A beta also runs it on Apple silicon without Rosetta, ready for macOS 28." : ""} Not made or endorsed by HMRC.
 
-## Key facts
-- Problem: since macOS Sequoia, Basic PAYE Tools does not start properly. HMRC's official workaround uses Terminal commands, a window kept open, and Ctrl+C to stop.
-- Fix: install PayrollRTI, then double-click it. It starts BPT's background service, opens BPT in a Mac window, and stops the service on quit.
-- Data: everything runs locally. PayrollRTI sends no data anywhere.
-- Works on Apple silicon and Intel Macs. Signed and notarised by Apple.
-- Cost: free. Licence: MIT.${version ? `\n- Latest version: ${version}` : ""}
-- For small employers using HMRC Basic PAYE Tools (fewer than 10 employees).
-
+## The problem
+- Basic PAYE Tools is HMRC's free payroll software for employers with fewer than 10 employees, used to send Real Time Information (RTI) payroll submissions to HMRC.
+- Since macOS Sequoia, Basic PAYE Tools does not start properly on a Mac: its background service doesn't start, so it hangs or never opens. HMRC acknowledge the problem on macOS 15 Sequoia, 26 Tahoe and 27 Golden Gate. Their workaround is to open Terminal, type commands, keep the window open while running payroll, and press Ctrl+C at the end, every time.
+- HMRC's Mac app is built for Intel Macs, so on Apple silicon Macs it runs through Rosetta. Apple say macOS 27 Golden Gate is the last version with full Rosetta; from macOS 28 (due 2027) only some older games keep it, so Intel-only apps stop running on Apple silicon.
+- Intel Macs don't use Rosetta. macOS 26 Tahoe is the last version for Intel Macs.
+${version ? `
+## What PayrollRTI ${version} does (current release)` : `
+## What PayrollRTI does`}
+- Install PayrollRTI, then double-click it: it starts Basic PAYE Tools' background service, opens Basic PAYE Tools in its own Mac window, and stops the service cleanly on quit. No Terminal.
+- Runs the same steps as HMRC's own launcher, which the Terminal workaround skips: setting up the database on first use, updating it after a new Basic PAYE Tools version, and Basic PAYE Tools' backup when you quit.
+- Menu bar status, start at login, and alerts when HMRC release a new version of Basic PAYE Tools.
+- Runs the copy of Basic PAYE Tools installed from GOV.UK in Applications. It doesn't modify, bundle or redistribute HMRC's software.
+- Works on Apple silicon (through Rosetta, which PayrollRTI can install) and Intel Macs, macOS 15 Sequoia and later. Signed and notarised by Apple.
+- Data: everything runs locally. PayrollRTI sends no data anywhere. Your payroll stays in ~/HMRC/payetools-rti.
+- Cost: free, no account, no tracking. Licence: MIT. Made by seatofthepants.net Ltd.
+${llmsBeta}
 ## Links
-- [Download (latest release)](${downloadUrl})
+- [Download the current release${version ? ` (${version})` : ""}](${downloadUrl})${betaIsCurrent ? `\n- [Download the beta (${beta.version})](${betaDownloadUrl})\n- [Beta page](${SITE}/beta/)` : ""}
 - [Source code](${REPO})
 - [Report a problem](${REPO}/issues)
 - [HMRC's help page on the issue](${HMRC_HELP})
 - [Get Basic PAYE Tools from GOV.UK](${HMRC_BPT})
 - [Release notes](${SITE}/releases/)
+- [Apple Support Communities thread on Basic PAYE Tools not opening](${APPLE_THREAD})
+- [Full text, with every common question answered](${SITE}/llms-full.txt)
 `;
+
+const llmsFull = `${llms}
+## Common questions (current release)
+
+${faqMarkdown(faq, `${SITE}/`)}
+${betaIsCurrent ? `
+## Common questions (beta)
+
+${faqMarkdown(betaFaq, `${SITE}/beta/`)}
+` : ""}`;
 const robots = `User-agent: *\nAllow: /\nDisallow: /stats/\n\nSitemap: ${SITE}/sitemap.xml\n`;
 const sitemap = `<?xml version="1.0" encoding="UTF-8"?>
 <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
@@ -716,6 +760,7 @@ write("beta/index.html", betaPage);
 write("stats/index.html", statsPage);
 write("404.html", notFound);
 write("llms.txt", llms);
+write("llms-full.txt", llmsFull);
 write("robots.txt", robots);
 write("sitemap.xml", sitemap);
 write("stats.json", JSON.stringify(stats, null, 2) + "\n");
