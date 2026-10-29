@@ -4,6 +4,14 @@
     "a": "Since macOS Sequoia, the part of Basic PAYE Tools that runs in the background no longer starts by itself. HMRC acknowledge the problem on macOS 15 Sequoia, 26 Tahoe and 27 Golden Gate, and their workaround uses the Terminal app every time you run payroll. PayrollRTI does those steps for you, so Basic PAYE Tools opens with a double-click."
   },
   {
+    "q": "Does Basic PAYE Tools work on macOS 27 Golden Gate?",
+    "a": "Not on its own. On macOS 27 Golden Gate, as on 26 Tahoe and 15 Sequoia, HMRC’s Basic PAYE Tools won’t open without their Terminal workaround. With PayrollRTI it opens with a double-click. macOS 27 only runs on Apple silicon Macs, where PayrollRTI can run HMRC’s Mac app through Rosetta, or HMRC’s Linux version with no Rosetta at all."
+  },
+  {
+    "q": "Basic PAYE Tools is stuck on “Starting application”. What can I do?",
+    "a": "That is the same problem: the part of Basic PAYE Tools that runs in the background hasn’t started, so the window waits for it forever. Quit Basic PAYE Tools, install PayrollRTI, and open Basic PAYE Tools through PayrollRTI instead. Your payroll data stays where it is."
+  },
+  {
     "q": "Will Basic PAYE Tools still work on macOS 28, when Rosetta is removed?",
     "a": "HMRC’s Mac app is built for Intel Macs, so on an Apple silicon Mac it only runs through Rosetta. Apple say macOS 27 Golden Gate is the last version with full Rosetta, and from macOS 28 only some older games will keep it. PayrollRTI can run HMRC’s Linux version of Basic PAYE Tools instead, which needs no Rosetta, so it is built to keep working on macOS 28 and later."
   },
@@ -38,7 +46,7 @@
   },
   {
     "q": "Which Macs and versions of macOS does it work on?",
-    "a": "macOS 15 Sequoia and later, including 26 Tahoe and 27 Golden Gate. The Linux version needs an Apple silicon Mac (M1 or later). Intel Macs keep using HMRC’s Mac app, which runs on them without Rosetta. To check your Mac, open the Apple menu and choose About This Mac."
+    "a": "macOS 15 Sequoia and later, including 26 Tahoe and 27 Golden Gate (macOS was called OS X until 2016). The Linux version needs an Apple silicon Mac (M1 or later). Intel Macs keep using HMRC’s Mac app, which runs on them without Rosetta. To check your Mac, open the Apple menu and choose About This Mac."
   },
   {
     "q": "Do I still need the Terminal?",

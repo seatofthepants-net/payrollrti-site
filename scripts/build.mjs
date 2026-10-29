@@ -172,7 +172,7 @@ function picture(stem, widths, alt, sizes, attrs = "") {
 
 // ---------- home ----------
 const metaList = (items) => items.filter(Boolean).map((item) => `<li>${item}</li>`).join("");
-const heroFacts = metaList(["Free and open source", "macOS Sequoia, Tahoe, Golden Gate and later", "Apple silicon and Intel", version ? `Version ${esc(version)}` : null]);
+const heroFacts = metaList(["Free and open source", "macOS 15 Sequoia, 26 Tahoe, 27 Golden Gate and later", "Apple silicon and Intel", version ? `Version ${esc(version)}` : null]);
 const ctaMeta = metaList([countText ? `Downloaded ${countText} times` : null, version ? `Version ${esc(version)}` : null, `<a href="/releases/">What’s new</a>`]);
 
 const renderFaq = (list) => list.map((f) => `<details${f.open ? " open" : ""}>
@@ -214,8 +214,8 @@ const jsonld = {
 };
 
 const home = head({
-  title: "Run Basic PAYE Tools on a Mac without Terminal or Rosetta | PayrollRTI",
-  description: "Basic PAYE Tools not opening on your Mac? PayrollRTI is a free app that runs HMRC’s Basic PAYE Tools on macOS Sequoia, Tahoe and Golden Gate with a double-click, and on Apple silicon without Rosetta, ready for macOS 28. No Terminal. Free and open source.",
+  title: "Use HMRC Basic PAYE Tools on macOS 27 Golden Gate, Tahoe and Sequoia | PayrollRTI",
+  description: "Basic PAYE Tools stuck on “Starting application” or not opening on macOS 27 Golden Gate, 26 Tahoe or 15 Sequoia? PayrollRTI is a free app that runs HMRC’s Basic PAYE Tools with a double-click. No Terminal, and no Rosetta on Apple silicon, ready for macOS 28.",
   path: "/",
   extra: jsonldScript(jsonld),
 }) + header("/", [["#engines", "Two ways to run it"], ["#care", "Your payroll data"], ["#install", "How to install"], ["#faq", "Questions"]]) + `<main id="main">
@@ -241,7 +241,7 @@ const home = head({
 <div class="copy">
 <h2 class="h2" id="problem-title">Two things stop Basic PAYE Tools working on a Mac</h2>
 <p>Basic PAYE Tools (BPT) is HMRC’s free payroll software for employers with fewer than 10 employees. You use it to send your payroll to HMRC each time you pay your staff, under Real Time Information (RTI).</p>
-<p><strong>It no longer opens by itself.</strong> Since macOS Sequoia, BPT’s background service doesn’t start. HMRC’s fix is to type commands into the Terminal app every time you run payroll.</p>
+<p><strong>It no longer opens by itself.</strong> Since macOS Sequoia, BPT’s background service doesn’t start, so it sits on “Starting application” or never opens. HMRC’s fix is to type commands into the Terminal app every time you run payroll.</p>
 <p><strong>Rosetta is going.</strong> HMRC’s Mac app is built for Intel Macs, so on Apple silicon it runs through Rosetta. Apple say macOS 27 Golden Gate is the last version with full Rosetta.</p>
 <p><a href="${HMRC_HELP}">Read HMRC’s help page about this issue</a></p>
 </div>
@@ -538,7 +538,7 @@ const llms = `# PayrollRTI
 
 ## The problem
 - Basic PAYE Tools is HMRC's free payroll software for employers with fewer than 10 employees, used to send Real Time Information (RTI) payroll submissions to HMRC.
-- Since macOS Sequoia, Basic PAYE Tools does not start properly on a Mac: its background service doesn't start, so it hangs or never opens. HMRC acknowledge the problem on macOS 15 Sequoia, 26 Tahoe and 27 Golden Gate. Their workaround is to open Terminal, type commands, keep the window open while running payroll, and press Ctrl+C at the end, every time.
+- Since macOS Sequoia, Basic PAYE Tools does not start properly on a Mac: its background service doesn't start, so it hangs on "Starting application" or never opens. HMRC acknowledge the problem on macOS 15 Sequoia, 26 Tahoe and 27 Golden Gate (macOS was called OS X until 2016). Their workaround is to open Terminal, type commands, keep the window open while running payroll, and press Ctrl+C at the end, every time.
 - HMRC's Mac app is built for Intel Macs, so on Apple silicon Macs it runs through Rosetta. Apple say macOS 27 Golden Gate is the last version with full Rosetta; from macOS 28 (due 2027) only some older games keep it, so Intel-only apps stop running on Apple silicon.
 - Intel Macs don't use Rosetta. macOS 26 Tahoe is the last version for Intel Macs.
 ${version ? `
