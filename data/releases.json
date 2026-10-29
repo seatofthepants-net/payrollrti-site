@@ -1,5 +1,18 @@
 [
   {
+    "tag": "v0.2.0",
+    "version": "0.2.0",
+    "name": "PayrollRTI 0.2.0",
+    "published_at": "2026-10-29T22:58:43Z",
+    "html_url": "https://github.com/seatofthepants-net/payrollrti/releases/tag/v0.2.0",
+    "body": "## What's changed\n\n- Notify the website when a release is published (b4677d5)\n\nRuns HMRC's free [Basic PAYE Tools](https://www.gov.uk/basic-paye-tools): either their Mac installer in /Applications, or their Linux build, which PayrollRTI downloads and runs natively on Apple silicon.\n\n**Full changelog:** https://github.com/seatofthepants-net/payrollrti/compare/v0.2.0-beta.1...v0.2.0\n",
+    "dmg": {
+      "name": "PayrollRTI-0.2.0.dmg",
+      "url": "https://github.com/seatofthepants-net/payrollrti/releases/download/v0.2.0/PayrollRTI-0.2.0.dmg",
+      "size": 11400857
+    }
+  },
+  {
     "tag": "v0.1.1",
     "version": "0.1.1",
     "name": "PayrollRTI 0.1.1",
