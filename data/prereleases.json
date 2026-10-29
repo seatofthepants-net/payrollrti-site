@@ -1,1 +1,15 @@
-[]
+[
+  {
+    "tag": "v0.2.0-beta.1",
+    "version": "0.2.0-beta.1",
+    "name": "PayrollRTI 0.2.0-beta.1",
+    "published_at": "2026-10-29T18:41:40Z",
+    "html_url": "https://github.com/seatofthepants-net/payrollrti/releases/tag/v0.2.0-beta.1",
+    "body": "## What's changed\n\n- Settings as three tabs instead of one long list (b1e9a25)\n- Find Basic PAYE Tools wherever the installer put it, and let the user choose (f5d1bc2)\n- Split the DOS date expressions; Xcode 26.3's type-checker gave up on them (32cdf0c)\n- Pass swiftlint --strict and swift format (cdb9f99)\n- PayrollRTI updates itself from GitHub releases; pre-release tags publish pre-releases (5cec5d5)\n- Engine choice screen to the agreed design, with Rosetta detection (b2f57a6)\n- Check updates against HMRC's own feed and back up before any change (5c92ed5)\n- Explain the engine choice and check each against the payroll database (a047df0)\n- Add a selectable engine: HMRC's Mac installer or their Linux build run natively (9f332a9)\n- rehost: default the runtime to a space-free path; CPython's Makefile needs one (aa5c130)\n- rehost: record the live NVR submission result (cf0fad9)\n- Spike: run HMRC's Linux BPT bytecode on a native arm64 CPython 2.7 (9cc7173)\n- Skip the main-branch DMG build when only docs, tests or tooling change (3de99de)\n- Remove marketing and design material; use a light not-installed screenshot (b47e2ef)\n\nRuns HMRC's free [Basic PAYE Tools](https://www.gov.uk/basic-paye-tools): either their Mac installer in /Applications, or their Linux build, which PayrollRTI downloads and runs natively on Apple silicon.\n\n**Pre-release for testing.** Your payroll data is backed up before anything changes it, but please keep your own backup too and report problems in the issues.\n\n**Full changelog:** https://github.com/seatofthepants-net/payrollrti/compare/v0.1.1...v0.2.0-beta.1\n",
+    "dmg": {
+      "name": "PayrollRTI-0.2.0-beta.1.dmg",
+      "url": "https://github.com/seatofthepants-net/payrollrti/releases/download/v0.2.0-beta.1/PayrollRTI-0.2.0-beta.1.dmg",
+      "size": 11400608
+    }
+  }
+]
