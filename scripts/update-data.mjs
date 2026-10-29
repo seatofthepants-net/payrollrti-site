@@ -1,8 +1,9 @@
 #!/usr/bin/env node
 // Pulls releases and download counts from GitHub and updates data/.
 //   GITHUB_TOKEN=... node scripts/update-data.mjs
-// Writes data/releases.json, data/stats.json, and adds today's rows to
-// data/downloads.csv (running it twice in a day replaces today's rows).
+// Writes data/releases.json, data/prereleases.json (for /beta/), data/stats.json,
+// and adds today's rows to data/downloads.csv (running it twice in a day replaces
+// today's rows). Pre-releases never count as the latest release or in the stats.
 import { readFileSync, writeFileSync } from "node:fs";
 import { dirname, join } from "node:path";
 import { fileURLToPath } from "node:url";
@@ -25,9 +26,11 @@ async function allReleases() {
 }
 
 const raw = await allReleases();
-const published = raw.filter((r) => !r.draft && !r.prerelease).sort((a, b) => b.published_at.localeCompare(a.published_at));
+const newestFirst = (a, b) => b.published_at.localeCompare(a.published_at);
+const published = raw.filter((r) => !r.draft && !r.prerelease).sort(newestFirst);
+const prereleased = raw.filter((r) => !r.draft && r.prerelease).sort(newestFirst);
 
-const releases = published.map((r) => {
+const shape = (r) => {
   const dmgs = r.assets.filter((a) => a.name.toLowerCase().endsWith(".dmg"));
   const main = dmgs[0];
   return {
@@ -40,7 +43,9 @@ const releases = published.map((r) => {
     dmg: main ? { name: main.name, url: main.browser_download_url, size: main.size } : null,
     downloads: dmgs.reduce((n, a) => n + a.download_count, 0),
   };
-});
+};
+const releases = published.map(shape);
+const prereleases = prereleased.map(shape);
 
 const byVersion = Object.fromEntries(releases.map((r) => [r.version, r.downloads]));
 const total = releases.reduce((n, r) => n + r.downloads, 0);
@@ -54,6 +59,7 @@ const changed = prev.total !== total || JSON.stringify(prev.byVersion) !== JSON.
 const stats = { total, byVersion, updatedAt: changed || !prev.updatedAt ? now : prev.updatedAt };
 
 writeFileSync(join(DATA, "releases.json"), JSON.stringify(releases.map(({ downloads, ...r }) => r), null, 2) + "\n");
+writeFileSync(join(DATA, "prereleases.json"), JSON.stringify(prereleases.map(({ downloads, ...r }) => r), null, 2) + "\n");
 writeFileSync(join(DATA, "stats.json"), JSON.stringify(stats, null, 2) + "\n");
 
 const csvPath = join(DATA, "downloads.csv");
@@ -63,4 +69,4 @@ const kept = lines.slice(1).filter((l) => l && !l.startsWith(`${today},`));
 const todayRows = releases.map((r) => `${today},${r.version},${r.downloads}`);
 writeFileSync(csvPath, [header, ...kept, ...todayRows].join("\n") + "\n");
 
-console.log(`${releases.length} releases, ${total} downloads, latest ${releases[0]?.version ?? "none"}`);
+console.log(`${releases.length} releases, ${prereleases.length} pre-releases, ${total} downloads, latest ${releases[0]?.version ?? "none"}, beta ${prereleases[0]?.version ?? "none"}`);

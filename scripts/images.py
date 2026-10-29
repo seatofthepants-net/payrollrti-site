@@ -8,8 +8,9 @@ WebP/AVIF files, the link-preview image and the icons into src/images/.
     pip install pillow   # 11.2 or later for AVIF
     python3 scripts/images.py
 
-The DMG window is a hand-taken macOS screenshot (window shadow included) kept
-in scripts/sources/, since it shows the installer rather than the app.
+The DMG window (a hand-taken macOS screenshot, window shadow included) and the
+engine choice screen (from the app repo's docs/screenshots) are kept in
+scripts/sources/.
 
 Commit the outputs. The site build only copies them.
 """
@@ -99,6 +100,7 @@ def main():
         save_web(im, stem, [600, 1200])
 
     save_web(Image.open(SOURCES / "dmg-window.png").convert("RGBA"), "dmg-window", [600, 1200])
+    save_web(Image.open(SOURCES / "choose-engine.png").convert("RGBA"), "choose-engine", [800, 1600])
 
     # Link preview: hero window on the site green.
     og = Image.new("RGB", (1200, 630), GREEN)

@@ -30,6 +30,9 @@
 /stats/*
   X-Robots-Tag: noindex
 
+/beta/*
+  X-Robots-Tag: noindex
+
 https://:project.pages.dev/*
   X-Robots-Tag: noindex
 
