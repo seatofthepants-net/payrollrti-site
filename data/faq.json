@@ -1,28 +1,52 @@
 [
   {
     "q": "Why won’t Basic PAYE Tools open on my Mac?",
-    "a": "Since macOS Sequoia, the part of Basic PAYE Tools that runs in the background no longer starts by itself. HMRC’s help page explains a workaround using the Terminal app. PayrollRTI does this for you, so BPT opens with a double-click again."
+    "a": "Since macOS Sequoia, the part of Basic PAYE Tools that runs in the background no longer starts by itself. HMRC acknowledge the problem on macOS 15 Sequoia, 26 Tahoe and 27 Golden Gate, and their workaround uses the Terminal app every time you run payroll. PayrollRTI does those steps for you, so Basic PAYE Tools opens with a double-click."
   },
   {
-    "q": "Do I still need to use the Terminal?",
-    "a": "No. Once PayrollRTI is installed, you do not need to open the Terminal, type commands or press Ctrl+C. Open PayrollRTI and Basic PAYE Tools appears in its own window."
+    "q": "Will Basic PAYE Tools still work on macOS 28, when Rosetta is removed?",
+    "a": "HMRC’s Mac app is built for Intel Macs, so on an Apple silicon Mac it only runs through Rosetta. Apple say macOS 27 Golden Gate is the last version with full Rosetta, and from macOS 28 only some older games will keep it. PayrollRTI can run HMRC’s Linux version of Basic PAYE Tools instead, which needs no Rosetta, so it is built to keep working on macOS 28 and later."
   },
   {
-    "q": "Is this an official HMRC app?",
-    "a": "No. PayrollRTI is a free community tool. HMRC made Basic PAYE Tools, and PayrollRTI simply opens it for you. HMRC has not made or endorsed PayrollRTI."
+    "q": "Do I need Rosetta to run Basic PAYE Tools?",
+    "a": "On an Apple silicon Mac, HMRC’s Mac app needs Rosetta, and PayrollRTI can install it for you while Apple still offer it. HMRC’s Linux version, run by PayrollRTI, does not need Rosetta at all. Intel Macs never need Rosetta."
+  },
+  {
+    "q": "What is the Linux version, and is it the same Basic PAYE Tools?",
+    "a": "HMRC publish Basic PAYE Tools for Windows, Mac and Linux on GOV.UK. Inside, the Linux version is the same program as the Mac app, packaged differently. PayrollRTI downloads it from GOV.UK and runs it on a small runtime built for Apple silicon. HMRC’s files are not changed, and PayrollRTI does not copy or redistribute them. You get the same screens, the same calculations and the same submissions to HMRC."
+  },
+  {
+    "q": "Has the Linux version been tested with real payroll?",
+    "a": "Yes. Real backups were restored into it, P60s were produced, and live submissions to HMRC (a NINO verification request and a Full Payment Submission) were accepted. A month’s pay run entered in both HMRC’s Mac app and the Linux version produced identical submissions. Back up before you switch, as you would before any update."
   },
   {
     "q": "Is my payroll data safe?",
-    "a": "Yes. Everything runs on your own Mac. PayrollRTI does not send your data anywhere. Your payroll goes to HMRC through Basic PAYE Tools, in exactly the same way as before.",
+    "a": "Everything runs on your own Mac, and PayrollRTI does not send your data anywhere. Both ways of running Basic PAYE Tools use the same payroll data in your HMRC folder. PayrollRTI backs it up before it downloads the Linux version and before any update that changes your data. Read <a href=\"#care\">looking after your payroll data</a> before you switch.",
     "open": true
   },
   {
-    "q": "Does it work on older Intel Macs and newer Apple silicon Macs?",
-    "a": "Yes, it works on both."
+    "q": "Can I switch back to HMRC’s Mac app?",
+    "a": "Yes, in PayrollRTI’s Settings, as long as both are the same version of Basic PAYE Tools. A newer version updates your payroll data when it first starts, and older versions cannot open it after that. So if the Linux version updates to a new release, install the same release of HMRC’s Mac app from GOV.UK before you switch back."
   },
   {
-    "q": "Which versions of macOS does it work on?",
-    "a": "macOS Sequoia (version 15), macOS Tahoe (version 26) and later. To check your version, open the Apple menu in the top-left corner of your screen and choose About This Mac."
+    "q": "I already use PayrollRTI. How do I update?",
+    "a": "Download the latest version and drag it to Applications, choosing Replace. Your payroll data stays where it is. From version 0.2.0, PayrollRTI checks for new versions and updates itself."
+  },
+  {
+    "q": "Is this approved by HMRC?",
+    "a": "No. PayrollRTI is a free community tool, and HMRC have not made, endorsed or tested it. HMRC support their Linux version on Ubuntu Linux, not on a Mac. For questions about your payroll itself, contact HMRC."
+  },
+  {
+    "q": "Which Macs and versions of macOS does it work on?",
+    "a": "macOS 15 Sequoia and later, including 26 Tahoe and 27 Golden Gate. The Linux version needs an Apple silicon Mac (M1 or later). Intel Macs keep using HMRC’s Mac app, which runs on them without Rosetta. To check your Mac, open the Apple menu and choose About This Mac."
+  },
+  {
+    "q": "Do I still need the Terminal?",
+    "a": "No. Open PayrollRTI and Basic PAYE Tools appears in its own window. There are no commands to type and no window to keep open."
+  },
+  {
+    "q": "Is PayrollRTI free?",
+    "a": "Yes. PayrollRTI is free and open source under the MIT licence, with no account, no sign-up and no tracking."
   },
   {
     "q": "What if something goes wrong?",

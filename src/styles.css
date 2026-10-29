@@ -128,14 +128,6 @@ code { font-size: 0.9em; background: var(--color-paper-2); padding: var(--space-
 .card-light .app-icon { width: 56px; height: 56px; font-size: 32px; flex-shrink: 0; }
 .card-light .big { font: 800 var(--text-lg)/1.3 var(--font-display); letter-spacing: -0.01em; }
 
-/* Features */
-.features { list-style: none; margin: var(--space-2xl) 0 0; padding: 0; display: grid; grid-template-columns: repeat(auto-fit, minmax(min(100%, 230px), 1fr)); gap: var(--space-lg); }
-.features li { display: grid; grid-template-columns: auto minmax(0, 1fr); align-items: start; column-gap: var(--space-sm); background: var(--color-paper); border-radius: var(--radius-card); padding: var(--space-lg); }
-.feature-icon { grid-row: 1; color: var(--color-field-3); padding-top: var(--space-3xs); }
-.features h3 { grid-column: 2; font-size: 1.125rem; line-height: 1.25; text-wrap: pretty; }
-.features p { grid-column: 1 / -1; margin-top: var(--space-sm); font-size: 1rem; color: var(--color-muted); }
-.signed { margin-top: var(--space-xl); font-size: 1rem; color: var(--color-muted); }
-
 /* Install */
 .steps { list-style: none; margin: var(--space-2xl) 0 0; padding: 0; display: grid; grid-template-columns: repeat(auto-fit, minmax(min(100%, 300px), 1fr)); gap: var(--space-lg); }
 .step { display: flex; flex-direction: column; border: var(--rule-hair) solid var(--color-rule); border-radius: var(--radius-card); overflow: clip; }
@@ -156,14 +148,7 @@ code { font-size: 0.9em; background: var(--color-paper-2); padding: var(--space-
 .mock-name { font-size: 0.875rem; font-weight: 700; }
 .mock-bar { height: 5px; margin-top: var(--space-xs); border-radius: var(--radius-pill); background: var(--color-success); }
 
-.not-installed { margin: var(--space-xl) 0 0; display: grid; grid-template-columns: repeat(auto-fit, minmax(min(100%, 320px), 1fr)); gap: var(--space-xl); align-items: center; border: var(--rule-hair) solid var(--color-rule); border-radius: var(--radius-card); padding: var(--space-lg); }
-.not-installed img { width: 100%; border-radius: var(--radius-inner); box-shadow: var(--shadow-card); }
-.not-installed .t { font: 800 var(--text-lg)/1.3 var(--font-display); letter-spacing: -0.01em; }
-.not-installed .d { margin-top: var(--space-xs); color: var(--color-muted); }
-.not-installed .l { margin-top: var(--space-sm); }
-
-/* Beta */
-.beta-bar { margin: 0; padding: var(--space-xs) var(--gutter); background: var(--color-paper-2); border-bottom: var(--rule-hair) solid var(--color-rule); font-size: 0.9375rem; color: var(--color-ink-2); text-align: center; }
+/* Engines, macOS table, data care, quotes */
 .mac-table th, .mac-table td { vertical-align: top; }
 .table-note { margin-top: var(--space-md); font-size: 1rem; color: var(--color-muted); }
 .engine-shot { margin: var(--space-2xl) auto 0; max-width: 960px; }
@@ -257,9 +242,10 @@ th { font-weight: 700; }
 td.num, th.num { text-align: right; }
 caption { text-align: left; padding-bottom: var(--space-xs); color: var(--color-muted); }
 
-/* 404 */
-.notfound { padding-block: var(--space-4xl); text-align: center; }
-.notfound .h2 { margin-inline: auto; }
-.notfound p { margin: var(--space-md) auto 0; }
+/* 404 and /beta/ */
+.statuspage { padding-block: var(--space-4xl); text-align: center; }
+.statuspage .h2 { margin-inline: auto; }
+.statuspage p { margin: var(--space-md) auto 0; }
+.statuspage .actions { margin-top: var(--space-lg); }
 
 .grow { flex: 1; min-width: 0; }

@@ -24,7 +24,6 @@ const releases = readJSON("releases.json");
 const prereleases = readJSON("prereleases.json");
 const stats = readJSON("stats.json");
 const faq = readJSON("faq.json");
-const betaFaq = readJSON("beta-faq.json");
 const csv = readFileSync(join(DATA, "downloads.csv"), "utf8");
 
 const latest = releases[0] || null;
@@ -131,7 +130,7 @@ function header(current, anchors) {
 <a class="brand" href="/"><span class="brand-mark" aria-hidden="true">£</span>PayrollRTI</a>
 <nav class="nav" aria-label="Main">
 <ul>
-${anchors ? anchors.map(([href, label]) => item(href, label)).join("\n") : current === "/" ? item("#what-it-does", "What it does") + "\n" + item("#install", "How to install") + "\n" + item("#faq", "Questions") : item("/", "Home")}
+${anchors ? anchors.map(([href, label]) => item(href, label)).join("\n") : item("/", "Home")}
 ${item("/releases/", "Release notes")}
 ${item(REPO, "GitHub")}
 </ul>
@@ -171,16 +170,21 @@ function picture(stem, widths, alt, sizes, attrs = "") {
 
 // ---------- home ----------
 const metaList = (items) => items.filter(Boolean).map((item) => `<li>${item}</li>`).join("");
-const versionBits = metaList(["Free and open source", "Works on macOS Sequoia, Tahoe and later", "Apple silicon and Intel", version ? `Version ${esc(version)}` : null]);
+const heroFacts = metaList(["Free and open source", "macOS Sequoia, Tahoe, Golden Gate and later", "Apple silicon and Intel", version ? `Version ${esc(version)}` : null]);
 const ctaMeta = metaList([countText ? `Downloaded ${countText} times` : null, version ? `Version ${esc(version)}` : null, `<a href="/releases/">What’s new</a>`]);
 
 const renderFaq = (list) => list.map((f) => `<details${f.open ? " open" : ""}>
 <summary>${esc(f.q)}<span class="plus" aria-hidden="true">+</span></summary>
 <p class="answer">${f.a}</p>
 </details>`).join("\n");
-const faqHtml = renderFaq(faq);
 const faqJsonld = (list) => ({ "@type": "FAQPage", mainEntity: list.map((f) => ({ "@type": "Question", name: f.q, acceptedAnswer: { "@type": "Answer", text: stripTags(f.a) } })) });
 const jsonldScript = (data) => `<script type="application/ld+json">${JSON.stringify(data).replace(/</g, "\\u003c")}</script>\n`;
+
+// The newest pre-release, offered on /beta/ only while it's newer than the latest release.
+const beta = prereleases[0] || null;
+const betaIsCurrent = Boolean(beta && (!latest || beta.published_at > latest.published_at));
+const betaDownloadUrl = beta?.dmg?.url || beta?.html_url || `${REPO}/releases`;
+const betaNotesUrl = beta?.html_url || `${REPO}/releases`;
 
 const jsonld = {
   "@context": "https://schema.org",
@@ -188,7 +192,7 @@ const jsonld = {
     {
       "@type": "SoftwareApplication",
       name: "PayrollRTI",
-      description: "Free, open-source macOS app that runs HMRC Basic PAYE Tools on macOS Sequoia (15), Tahoe (26) and later without Terminal commands.",
+      description: "Free, open-source macOS app that runs HMRC Basic PAYE Tools on macOS Sequoia (15), Tahoe (26) and Golden Gate (27) without Terminal commands, and on Apple silicon without Rosetta, ready for macOS 28, by running HMRC's Linux version natively.",
       applicationCategory: "BusinessApplication",
       applicationSubCategory: "Payroll",
       operatingSystem: "macOS 15 or later",
@@ -208,216 +212,22 @@ const jsonld = {
 };
 
 const home = head({
-  title: "Run HMRC Basic PAYE Tools on a Mac (macOS Sequoia and later) | PayrollRTI",
-  description: "Basic PAYE Tools not opening on your Mac? PayrollRTI is a free app that runs HMRC's BPT on macOS Sequoia, Tahoe and later with one double-click. No Terminal commands. Your data stays on your Mac.",
+  title: "Run Basic PAYE Tools on a Mac without Terminal or Rosetta | PayrollRTI",
+  description: "Basic PAYE Tools not opening on your Mac? PayrollRTI is a free app that runs HMRC’s Basic PAYE Tools on macOS Sequoia, Tahoe and Golden Gate with a double-click, and on Apple silicon without Rosetta, ready for macOS 28. No Terminal. Free and open source.",
   path: "/",
   extra: jsonldScript(jsonld),
-}) + header("/") + `<main id="main">
-
-<section class="hero" aria-labelledby="hero-title">
-<div class="wrap">
-<div class="app-icon" aria-hidden="true">£</div>
-<h1 id="hero-title">Run HMRC’s Basic PAYE Tools on your modern Mac.<br> Without the Terminal.</h1>
-<p class="lede">PayrollRTI opens Basic PAYE Tools in a proper Mac window with one double-click. You do not need to type any commands or keep extra windows open.</p>
-<div class="actions">
-<a class="btn btn-gold" href="${esc(downloadUrl)}">${ICON_DOWNLOAD}Download for Mac</a>
-<a class="btn btn-ghost" href="${esc(releaseUrl)}">Get it from GitHub Releases</a>
-</div>
-<ul class="meta">${versionBits}</ul>
-<div class="hero-shot">${picture("basic-paye-tools-on-mac", [1000, 2000], "HMRC’s Basic PAYE Tools home page open in its own Mac window, run by PayrollRTI", "(max-width: 1120px) 100vw, 1080px", 'fetchpriority="high"')}</div>
-</div>
-</section>
-
-<div class="notice"><p>PayrollRTI is a free community tool. It is not made or endorsed by HMRC. Basic PAYE Tools itself is HMRC’s software.</p></div>
-
-<section class="section" aria-labelledby="problem-title">
-<div class="wrap split">
-<div class="copy">
-<h2 class="h2" id="problem-title">Why Basic PAYE Tools won’t open on newer Macs</h2>
-<p>Basic PAYE Tools (BPT) is HMRC’s free software for employers with fewer than 10 employees. You use it to send your payroll to HMRC each time you pay your staff. This is called Real Time Information, or RTI.</p>
-<p>Since macOS Sequoia, BPT does not open properly on its own. HMRC’s official fix asks you to open the Terminal app, type commands, keep that window open while you work, and press Ctrl+C when you have finished.</p>
-<p><a href="${HMRC_HELP}">Read HMRC’s help page about this issue</a></p>
-</div>
-<div class="compare">
-<div class="card-dark">
-<p class="label">HMRC’s workaround</p>
-<ol>
-<li>Open the Terminal app</li>
-<li>Type in a set of commands</li>
-<li>Keep the Terminal window open while you do payroll</li>
-<li>Press Ctrl+C when you have finished</li>
-</ol>
-</div>
-<div class="card-light">
-<div class="app-icon" aria-hidden="true">£</div>
-<div>
-<p class="big">Double-click PayrollRTI. That’s it.</p>
-</div>
-</div>
-</div>
-</div>
-</section>
-
-<section class="section section-alt" id="what-it-does" aria-labelledby="features-title">
-<div class="wrap">
-<h2 class="h2 center" id="features-title">What PayrollRTI does</h2>
-<p class="sub center">It takes care of the fiddly parts, so you can get on with paying your staff.</p>
-<ul class="features">
-<li>
-<span class="feature-icon" aria-hidden="true"><svg width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="4" width="18" height="16" rx="2.5"/><path d="M3 9h18"/><circle cx="6.5" cy="6.5" r="0.6" fill="currentColor"/><circle cx="9" cy="6.5" r="0.6" fill="currentColor"/></svg></span>
-<h3>Opens BPT in a proper Mac window</h3>
-<p>It looks and works like any other app on your Mac. You can find it in your Dock.</p>
-</li>
-<li>
-<span class="feature-icon" aria-hidden="true"><svg width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3v8"/><path d="M6.3 6.8a8 8 0 1 0 11.4 0"/></svg></span>
-<h3>Starts and stops it for you</h3>
-<p>The part of BPT that runs in the background starts when you open the app and stops when you quit.</p>
-</li>
-<li>
-<span class="feature-icon" aria-hidden="true"><svg width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M6 16V11a6 6 0 0 1 12 0v5l1.5 2h-15z"/><path d="M10 21h4"/></svg></span>
-<h3>Tells you about HMRC updates</h3>
-<p>You will see a message when HMRC releases a new version of Basic PAYE Tools.</p>
-</li>
-<li>
-<span class="feature-icon" aria-hidden="true"><svg width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><rect x="5" y="10.5" width="14" height="10" rx="2.2"/><path d="M8 10.5V8a4 4 0 0 1 8 0v2.5"/></svg></span>
-<h3>Keeps your data on your Mac</h3>
-<p>PayrollRTI does not send your data anywhere. BPT runs on your own Mac, exactly as before.</p>
-</li>
-</ul>
-<p class="signed center">Signed and notarised by Apple under the seatofthepants.net Ltd developer account, so your Mac knows where it came from.</p>
-</div>
-</section>
-
-<section class="section" id="install" aria-labelledby="install-title">
-<div class="wrap">
-<h2 class="h2 center" id="install-title">How to run Basic PAYE Tools on your Mac</h2>
-<p class="sub center">It takes about a minute. You only need to do this once.</p>
-<ol class="steps">
-<li class="step">
-<div class="step-art" role="img" aria-label="The PayrollRTI download in your browser’s downloads list">
-<div class="mock mock-dl">
-<span class="t">Downloads</span>
-<div class="mock-row">
-<span class="mock-file"><span class="mini-icon">£</span></span>
-<div class="grow"><div class="mock-name">PayrollRTI.dmg</div><div class="mock-bar"></div></div>
-</div>
-</div>
-</div>
-<div class="step-body">
-<span class="step-num">1</span>
-<h3>Download PayrollRTI</h3>
-<p>Select the Download for Mac button. The file goes into your Downloads folder.</p>
-</div>
-</li>
-<li class="step">
-<div class="step-art">${picture("dmg-window", [600, 1200], "The PayrollRTI disk image window, with an arrow from the PayrollRTI icon to the Applications folder and the words Drag PayrollRTI into Applications", "260px", 'class="step-capture" loading="lazy"')}</div>
-<div class="step-body">
-<span class="step-num">2</span>
-<h3>Drag it to Applications</h3>
-<p>Open the file you downloaded. Then drag the PayrollRTI icon onto the Applications folder.</p>
-</div>
-</li>
-<li class="step">
-<div class="step-art">${picture("starting", [600, 1200], "PayrollRTI window saying it is checking for Basic PAYE Tools updates", "256px", 'class="step-shot" loading="lazy"')}</div>
-<div class="step-body">
-<span class="step-num">3</span>
-<h3>Open PayrollRTI</h3>
-<p>Double-click it in Applications. If you do not have Basic PAYE Tools yet, we will tell you how to <a href="${HMRC_BPT}">get it from GOV.UK</a>.</p>
-</div>
-</li>
-</ol>
-<figure class="not-installed">
-${picture("bpt-not-installed", [600, 1200], "PayrollRTI screen saying Basic PAYE Tools isn’t installed, with a Download from GOV.UK button and a Check Again button", "(max-width: 700px) 100vw, 520px", 'loading="lazy"')}
-<figcaption>
-<p class="t">Don’t have Basic PAYE Tools yet?</p>
-<p class="d">PayrollRTI will tell you. Select Download from GOV.UK, run HMRC’s installer, then come back and select Check Again.</p>
-<p class="l"><a href="${HMRC_BPT}">Get Basic PAYE Tools from GOV.UK</a></p>
-</figcaption>
-</figure>
-</div>
-</section>
-
-<section class="section section-alt" id="faq" aria-labelledby="faq-title">
-<div class="wrap narrow">
-<h2 class="h2 center" id="faq-title">Common questions</h2>
-<div class="faq">
-${faqHtml}
-</div>
-</div>
-</section>
-
-<section class="cta" aria-labelledby="cta-title">
-<div class="wrap">
-<h2 class="h2" id="cta-title">Get back to running payroll</h2>
-<p class="sub">Free to download. No account, no sign-up.</p>
-<div class="actions">
-<a class="btn btn-gold" href="${esc(downloadUrl)}">${ICON_DOWNLOAD}Download for Mac</a>
-<a class="btn btn-ghost" href="${esc(releaseUrl)}">Get it from GitHub Releases</a>
-</div>
-<ul class="meta">${ctaMeta}</ul>
-</div>
-</section>
-
-</main>
-` + footer;
-
-// ---------- beta ----------
-// The next version of the home page, for testers of the newest pre-release. Not indexed.
-// To promote it: move this content into the home page and data/beta-faq.json into data/faq.json.
-const beta = prereleases[0] || null;
-const betaVersion = beta?.version || null;
-const BETA_LINE = "0.2.0";
-const betaDownloadUrl = beta?.dmg?.url || `${REPO}/releases`;
-const betaNotesUrl = beta?.html_url || `${REPO}/releases`;
-const betaPrimary = beta?.dmg
-  ? `<a class="btn btn-gold" href="${esc(betaDownloadUrl)}">${ICON_DOWNLOAD}Download the beta</a>`
-  : `<a class="btn btn-gold" href="${esc(betaNotesUrl)}">Find the beta on GitHub</a>`;
-const betaFacts = metaList([betaVersion ? `Beta ${esc(betaVersion)}` : `Beta of version ${BETA_LINE}`, "Free and open source", "macOS Sequoia, Tahoe, Golden Gate and later", "Apple silicon and Intel"]);
-
-const betaJsonld = {
-  "@context": "https://schema.org",
-  "@graph": [
-    {
-      "@type": "SoftwareApplication",
-      name: "PayrollRTI",
-      description: "Free, open-source macOS app that runs HMRC Basic PAYE Tools on macOS Sequoia (15), Tahoe (26) and Golden Gate (27) without Terminal commands. The 0.2.0 beta runs HMRC's Linux version natively on Apple silicon, without Rosetta, so it is ready for macOS 28.",
-      applicationCategory: "BusinessApplication",
-      applicationSubCategory: "Payroll",
-      operatingSystem: "macOS 15 or later",
-      processorRequirements: "Apple silicon or Intel",
-      ...(betaVersion ? { softwareVersion: betaVersion } : {}),
-      downloadUrl: betaDownloadUrl,
-      license: "https://opensource.org/licenses/MIT",
-      isAccessibleForFree: true,
-      offers: { "@type": "Offer", price: "0", priceCurrency: "GBP" },
-      author: { "@type": "Organization", name: "seatofthepants.net Ltd", url: SOTP },
-      codeRepository: REPO,
-      screenshot: `${SITE}/images/choose-engine-1600.webp`,
-      url: `${SITE}/beta/`,
-    },
-    faqJsonld(betaFaq),
-  ],
-};
-
-const betaPage = head({
-  title: "Run Basic PAYE Tools on a Mac without Terminal or Rosetta (beta) | PayrollRTI",
-  description: "Beta of PayrollRTI 0.2.0: runs HMRC’s Basic PAYE Tools on macOS Sequoia, Tahoe and Golden Gate with no Terminal, and on Apple silicon without Rosetta, ready for macOS 28, using HMRC’s Linux version. Free and open source.",
-  path: "/beta/",
-  noindex: true,
-  extra: jsonldScript(betaJsonld),
-}) + `<p class="beta-bar">This is the beta of PayrollRTI ${BETA_LINE}, for testing. For everyday payroll, use <a href="/">the current release${version ? ` (${esc(version)})` : ""}</a>.</p>
-` + header("/beta/", [["#engines", "Two ways to run it"], ["#care", "Your payroll data"], ["#install", "How to install"], ["#faq", "Questions"]]) + `<main id="main">
+}) + header("/", [["#engines", "Two ways to run it"], ["#care", "Your payroll data"], ["#install", "How to install"], ["#faq", "Questions"]]) + `<main id="main">
 
 <section class="hero" aria-labelledby="hero-title">
 <div class="wrap">
 <div class="app-icon" aria-hidden="true">£</div>
 <h1 id="hero-title">Keep Basic PAYE Tools working on your Mac.</h1>
-<p class="lede">PayrollRTI opens HMRC’s payroll software with a double-click. The beta runs it without Rosetta, ready for macOS 28.</p>
+<p class="lede">PayrollRTI opens HMRC’s payroll software with a double-click, and runs it without Rosetta, ready for macOS 28.</p>
 <div class="actions">
-${betaPrimary}
-${beta?.dmg ? `<a class="btn btn-ghost" href="${esc(betaNotesUrl)}">Beta notes on GitHub</a>` : ""}
+<a class="btn btn-gold" href="${esc(downloadUrl)}">${ICON_DOWNLOAD}Download for Mac</a>
+<a class="btn btn-ghost" href="${esc(releaseUrl)}">Get it from GitHub Releases</a>
 </div>
-<ul class="meta">${betaFacts}</ul>
+<ul class="meta">${heroFacts}</ul>
 <div class="hero-shot">${picture("basic-paye-tools-on-mac", [1000, 2000], "HMRC’s Basic PAYE Tools home page open in its own Mac window, run by PayrollRTI", "(max-width: 1120px) 100vw, 1080px", 'fetchpriority="high"')}</div>
 </div>
 </section>
@@ -456,7 +266,7 @@ ${beta?.dmg ? `<a class="btn btn-ghost" href="${esc(betaNotesUrl)}">Beta notes o
 <section class="section section-alt" id="said" aria-labelledby="said-title">
 <div class="wrap">
 <h2 class="h2" id="said-title">From people running payroll on a Mac</h2>
-<p class="sub">About the current release, from the <a href="${APPLE_THREAD}">Apple Support Communities thread</a> on Basic PAYE Tools not opening.</p>
+<p class="sub">About PayrollRTI 0.1, from the <a href="${APPLE_THREAD}">Apple Support Communities thread</a> on Basic PAYE Tools not opening.</p>
 <div class="quotes">
 <figure class="quote">
 <blockquote cite="${APPLE_THREAD}?answerId=262184279022#262184279022"><p>“The software is amazing, thank you for providing it. The HMRC suggestion worked but was a bit clunky. The PAYE Tools software now loads faster than ever before.”</p></blockquote>
@@ -480,8 +290,8 @@ ${beta?.dmg ? `<a class="btn btn-ghost" href="${esc(betaNotesUrl)}">Beta notes o
 <tbody>
 <tr><th scope="row">14 Sonoma and earlier</th><td>Opens normally</td><td>Optional: one click from the menu bar, backup when you quit</td></tr>
 <tr><th scope="row">15 Sequoia and 26 Tahoe</th><td>Won’t open without HMRC’s Terminal workaround</td><td>Opens with a double-click</td></tr>
-<tr><th scope="row">27 Golden Gate</th><td>Won’t open without the workaround. The last macOS with full Rosetta</td><td>Opens with a double-click, through Rosetta or, in the beta, without it</td></tr>
-<tr><th scope="row">28, due in 2027</th><td>Apple say Intel apps will stop running, apart from some older games</td><td>The beta runs HMRC’s Linux version natively, with no Rosetta</td></tr>
+<tr><th scope="row">27 Golden Gate</th><td>Won’t open without the workaround. The last macOS with full Rosetta</td><td>Opens with a double-click, through Rosetta or without it</td></tr>
+<tr><th scope="row">28, due in 2027</th><td>Apple say Intel apps will stop running, apart from some older games</td><td>Runs HMRC’s Linux version natively, with no Rosetta</td></tr>
 </tbody>
 </table></div>
 <p class="table-note">Intel Macs don’t use Rosetta, and macOS 26 Tahoe is the last version for them, so HMRC’s Mac app keeps working there.</p>
@@ -491,7 +301,7 @@ ${beta?.dmg ? `<a class="btn btn-ghost" href="${esc(betaNotesUrl)}">Beta notes o
 <section class="section section-alt" id="engines" aria-labelledby="engines-title">
 <div class="wrap">
 <h2 class="h2 center" id="engines-title">Two ways to run Basic PAYE Tools</h2>
-<p class="sub center">Both run HMRC’s own Basic PAYE Tools on the same payroll data. Choose when you first open the beta, and change it later in Settings.</p>
+<p class="sub center">Both run HMRC’s own Basic PAYE Tools on the same payroll data. Choose when you first open PayrollRTI, and change it later in Settings.</p>
 <figure class="engine-shot">${picture("choose-engine", [800, 1600], "PayrollRTI asking how to run Basic PAYE Tools: HMRC’s Linux version, run by PayrollRTI, recommended for Apple silicon Macs, or HMRC’s Mac app, which runs through Rosetta", "(max-width: 1000px) 100vw, 960px", 'loading="lazy"')}</figure>
 <div class="engines">
 <article class="engine recommended" aria-labelledby="engine-linux">
@@ -523,7 +333,7 @@ ${beta?.dmg ? `<a class="btn btn-ghost" href="${esc(betaNotesUrl)}">Beta notes o
 <section class="section" id="care" aria-labelledby="care-title">
 <div class="wrap narrow">
 <h2 class="h2" id="care-title">Looking after your payroll data</h2>
-<p class="sub">This is a beta. Five habits keep your payroll safe while you try it.</p>
+<p class="sub">Running HMRC’s Linux version is new. Five habits keep your payroll safe, whichever way you run it.</p>
 <ol class="care">
 <li><strong>Back up before you start.</strong> In Basic PAYE Tools, choose Backup your data, and keep a copy off your Mac, on a USB stick or in cloud storage.</li>
 <li><strong>PayrollRTI backs up too.</strong> Before it downloads the Linux version, and before any update that changes your data, it saves a backup in <code>~/HMRC/payetools-rti/backups</code>. You can always restore your data from these in Basic PAYE Tools.</li>
@@ -537,8 +347,8 @@ ${beta?.dmg ? `<a class="btn btn-ghost" href="${esc(betaNotesUrl)}">Beta notes o
 
 <section class="section section-alt" id="install" aria-labelledby="install-title">
 <div class="wrap">
-<h2 class="h2 center" id="install-title">How to install the beta</h2>
-<p class="sub center">It takes a few minutes. Your payroll data stays where it is.</p>
+<h2 class="h2 center" id="install-title">How to run Basic PAYE Tools on your Mac</h2>
+<p class="sub center">It takes a few minutes, and you only do it once. PayrollRTI is signed and notarised by Apple.</p>
 <ol class="steps">
 <li class="step">
 <div class="step-art" role="img" aria-label="The PayrollRTI download in your browser’s downloads list">
@@ -552,8 +362,8 @@ ${beta?.dmg ? `<a class="btn btn-ghost" href="${esc(betaNotesUrl)}">Beta notes o
 </div>
 <div class="step-body">
 <span class="step-num">1</span>
-<h3>Download the beta</h3>
-<p>Back up your payroll first. Then download the beta from GitHub. The file goes into your Downloads folder.</p>
+<h3>Download PayrollRTI</h3>
+<p>Back up your payroll first. Then select the Download for Mac button. The file goes into your Downloads folder.</p>
 </div>
 </li>
 <li class="step">
@@ -569,7 +379,7 @@ ${beta?.dmg ? `<a class="btn btn-ghost" href="${esc(betaNotesUrl)}">Beta notes o
 <div class="step-body">
 <span class="step-num">3</span>
 <h3>Choose how to run it</h3>
-<p>Open PayrollRTI and pick HMRC’s Linux version or HMRC’s Mac app. Later betas are offered inside the app.</p>
+<p>Open PayrollRTI and pick HMRC’s Linux version, which it downloads from GOV.UK for you, or HMRC’s Mac app. From now on PayrollRTI updates itself.</p>
 </div>
 </li>
 </ol>
@@ -578,25 +388,50 @@ ${beta?.dmg ? `<a class="btn btn-ghost" href="${esc(betaNotesUrl)}">Beta notes o
 
 <section class="section" id="faq" aria-labelledby="faq-title">
 <div class="wrap narrow">
-<h2 class="h2 center" id="faq-title">Questions about the beta</h2>
+<h2 class="h2 center" id="faq-title">Common questions</h2>
 <div class="faq">
-${renderFaq(betaFaq)}
+${renderFaq(faq)}
 </div>
 </div>
 </section>
 
 <section class="cta" aria-labelledby="cta-title">
 <div class="wrap">
-<h2 class="h2" id="cta-title">Help test PayrollRTI ${BETA_LINE}</h2>
-<p class="sub">Free to download. Tell us how it goes on GitHub.</p>
+<h2 class="h2" id="cta-title">Get back to running payroll</h2>
+<p class="sub">Free to download. No account, no sign-up.</p>
 <div class="actions">
-${betaPrimary}
-<a class="btn btn-ghost" href="${REPO}/issues">Report a problem</a>
+<a class="btn btn-gold" href="${esc(downloadUrl)}">${ICON_DOWNLOAD}Download for Mac</a>
+<a class="btn btn-ghost" href="${esc(releaseUrl)}">Get it from GitHub Releases</a>
 </div>
-<ul class="meta">${metaList([betaVersion ? `Beta ${esc(betaVersion)}` : null, `<a href="/">Current release${version ? ` ${esc(version)}` : ""}</a>`])}</ul>
+<ul class="meta">${ctaMeta}</ul>
 </div>
 </section>
 
+</main>
+` + footer;
+
+// ---------- beta ----------
+// Not indexed. Offers the newest pre-release while it's newer than the latest release; otherwise says there's no beta.
+const betaPage = head({
+  title: betaIsCurrent ? `PayrollRTI ${beta.version} beta | PayrollRTI` : "No beta right now | PayrollRTI",
+  description: betaIsCurrent ? "A test version of PayrollRTI, newer than the latest release." : "There is no PayrollRTI beta at the moment. The latest release is the newest version.",
+  path: "/beta/",
+  noindex: true,
+}) + header("/beta/") + `<main id="main" class="statuspage">
+<div class="wrap">
+${betaIsCurrent ? `<h1 class="h2">PayrollRTI ${esc(beta.version)} beta</h1>
+<p>A test version, newer than the latest release${version ? ` (${esc(version)})` : ""}. Back up your payroll in Basic PAYE Tools before you try it.</p>
+<div class="actions">
+<a class="btn btn-gold btn-sm" href="${esc(betaDownloadUrl)}">${ICON_DOWNLOAD}Download the beta</a>
+</div>
+<p><a href="${esc(betaNotesUrl)}">What’s in this beta, on GitHub</a></p>
+<p><a href="/">Or use the latest release</a></p>` : `<h1 class="h2">No beta right now</h1>
+<p>${version ? `PayrollRTI ${esc(version)} is the latest version.` : "The latest release is the newest version."} There’s nothing newer to test at the moment.</p>
+<div class="actions">
+<a class="btn btn-gold btn-sm" href="${esc(downloadUrl)}">${ICON_DOWNLOAD}Download the latest release</a>
+</div>
+<p><a href="/releases/">See what’s new in each version</a></p>`}
+</div>
 </main>
 ` + footer;
 
@@ -670,7 +505,7 @@ const statsPage = head({ title: "Download numbers | PayrollRTI", description: "P
 ` + footer;
 
 // ---------- 404 ----------
-const notFound = head({ title: "Page not found | PayrollRTI", description: "This page could not be found.", path: "/404.html", noindex: true }) + header("") + `<main id="main" class="notfound">
+const notFound = head({ title: "Page not found | PayrollRTI", description: "This page could not be found.", path: "/404.html", noindex: true }) + header("") + `<main id="main" class="statuspage">
 <div class="wrap">
 <h1 class="h2">Page not found</h1>
 <p>The page you’re looking for isn’t here.</p>
@@ -682,8 +517,7 @@ const notFound = head({ title: "Page not found | PayrollRTI", description: "This
 // ---------- text files ----------
 // llms.txt: the facts an AI assistant needs, in plain Markdown. llms-full.txt adds every FAQ answer,
 // built from the same data as the pages so the two can't drift apart.
-// The beta section shows only while the newest pre-release is newer than the latest release.
-const betaIsCurrent = Boolean(beta && (!latest || beta.published_at > latest.published_at));
+// The beta lines show only while the newest pre-release is newer than the latest release.
 const mdFromHtml = (html, base) => html
   .replace(/<a href="([^"]+)">([^<]+)<\/a>/g, (_, href, text) => `[${text}](${href.startsWith("#") ? `${base}${href}` : href})`)
   .replace(/<[^>]+>/g, "");
@@ -691,22 +525,14 @@ const faqMarkdown = (list, base) => list.map((f) => `### ${f.q}\n\n${mdFromHtml(
 
 const llmsBeta = betaIsCurrent ? `
 ## Beta: PayrollRTI ${beta.version} (pre-release for testers)
-- Choose how PayrollRTI runs Basic PAYE Tools: HMRC's Linux version run natively by PayrollRTI (recommended on Apple silicon), or HMRC's Mac app as before. Change it any time in Settings.
-- HMRC's Linux version: PayrollRTI downloads HMRC's Linux build from GOV.UK (about 190 MB), unpacks it, and runs it on a native Apple silicon Python runtime built into the app. It is the same Basic PAYE Tools program as the Mac app, packaged differently. HMRC's files are not modified or redistributed.
-- No Rosetta needed, so it is designed to keep working on macOS 28 and later, when Apple will remove Rosetta for apps.
-- Same screens, same calculations, same submissions to HMRC. Tested by the developer with real backups restored, P60s produced, and live submissions accepted by HMRC (a NINO verification request and a Full Payment Submission); a month's pay run gave identical submissions from both engines.
-- Both engines use the same payroll data in ~/HMRC/payetools-rti. Switching between engines of the same Basic PAYE Tools version is a restart. A newer version updates the database when it first starts; older versions can't open it afterwards, and PayrollRTI refuses to start a copy that is too old.
-- Backups: PayrollRTI saves a backup in Basic PAYE Tools' own format before downloading the Linux version and before starting a version that will update the database, in ~/HMRC/payetools-rti/backups. You can always restore your data from these in Basic PAYE Tools.
-- Updates: PayrollRTI checks HMRC's own update feed. On the Linux engine it downloads new Basic PAYE Tools versions itself; on the Mac app engine it links to GOV.UK. PayrollRTI also updates itself from GitHub releases, and beta builds are offered later betas.
-- Needs an Apple silicon Mac (M1 or later) for the Linux engine. Intel Macs keep using HMRC's Mac app, which runs on them without Rosetta.
-- Beta advice: back up in Basic PAYE Tools first and keep a copy off the Mac; updates only go forward; install the matching version of HMRC's Mac app before switching back to it; run Basic PAYE Tools one way at a time.
+- A test version, newer than the latest release. Back up in Basic PAYE Tools before trying it.
 - Download the beta: ${betaDownloadUrl}
-- Beta page: ${SITE}/beta/
+- What's in it: ${betaNotesUrl}
 ` : "";
 
 const llms = `# PayrollRTI
 
-> Free, open-source Mac app that runs HMRC's Basic PAYE Tools (BPT) on macOS Sequoia (15), Tahoe (26) and Golden Gate (27) without the Terminal workaround in HMRC's help page.${betaIsCurrent ? " A beta also runs it on Apple silicon without Rosetta, ready for macOS 28." : ""} Not made or endorsed by HMRC.
+> Free, open-source Mac app that runs HMRC's Basic PAYE Tools (BPT) on macOS Sequoia (15), Tahoe (26) and Golden Gate (27) without the Terminal workaround in HMRC's help page, and on Apple silicon without Rosetta, ready for macOS 28. Not made or endorsed by HMRC.
 
 ## The problem
 - Basic PAYE Tools is HMRC's free payroll software for employers with fewer than 10 employees, used to send Real Time Information (RTI) payroll submissions to HMRC.
@@ -717,15 +543,22 @@ ${version ? `
 ## What PayrollRTI ${version} does (current release)` : `
 ## What PayrollRTI does`}
 - Install PayrollRTI, then double-click it: it starts Basic PAYE Tools' background service, opens Basic PAYE Tools in its own Mac window, and stops the service cleanly on quit. No Terminal.
+- Two ways to run Basic PAYE Tools, chosen when PayrollRTI first opens and changeable any time in Settings: HMRC's Linux version run natively by PayrollRTI (recommended on Apple silicon), or HMRC's Mac app installed from GOV.UK.
+- HMRC's Linux version: PayrollRTI downloads HMRC's Linux build from GOV.UK (about 190 MB), unpacks it, and runs it on a native Apple silicon Python runtime built into the app. It is the same Basic PAYE Tools program as the Mac app, packaged differently. HMRC's files are not modified or redistributed. No Rosetta needed, so it is designed to keep working on macOS 28 and later, when Apple will remove Rosetta for apps.
+- HMRC's Mac app: runs on Intel Macs natively and on Apple silicon through Rosetta, which PayrollRTI can install while Apple still offer it.
+- Same screens, same calculations, same submissions to HMRC either way. Tested by the developer with real backups restored, P60s produced, and live submissions accepted by HMRC (a NINO verification request and a Full Payment Submission); a month's pay run gave identical submissions from both.
+- Both use the same payroll data in ~/HMRC/payetools-rti. Switching between them at the same Basic PAYE Tools version is a restart. A newer version updates the database when it first starts; older versions can't open it afterwards, and PayrollRTI refuses to start a copy that is too old.
 - Runs the same steps as HMRC's own launcher, which the Terminal workaround skips: setting up the database on first use, updating it after a new Basic PAYE Tools version, and Basic PAYE Tools' backup when you quit.
-- Menu bar status, start at login, and alerts when HMRC release a new version of Basic PAYE Tools.
-- Runs the copy of Basic PAYE Tools installed from GOV.UK in Applications. It doesn't modify, bundle or redistribute HMRC's software.
-- Works on Apple silicon (through Rosetta, which PayrollRTI can install) and Intel Macs, macOS 15 Sequoia and later. Signed and notarised by Apple.
-- Data: everything runs locally. PayrollRTI sends no data anywhere. Your payroll stays in ~/HMRC/payetools-rti.
+- Backups: PayrollRTI also saves a backup in Basic PAYE Tools' own format before downloading the Linux version and before starting a version that will update the database, in ~/HMRC/payetools-rti/backups. You can always restore your data from these in Basic PAYE Tools.
+- Updates: PayrollRTI checks HMRC's own update feed. With the Linux version it downloads new Basic PAYE Tools versions itself; with the Mac app it links to GOV.UK. PayrollRTI updates itself from GitHub releases (from version 0.2.0; earlier versions need a manual download).
+- Menu bar status and start at login.
+- Needs macOS 15 Sequoia or later. The Linux version needs an Apple silicon Mac (M1 or later); Intel Macs use HMRC's Mac app. Signed and notarised by Apple.
+- Advice: back up in Basic PAYE Tools and keep a copy off the Mac before switching; install the matching version of HMRC's Mac app before switching back to it; run Basic PAYE Tools one way at a time.
+- Data: everything runs locally. PayrollRTI sends no data anywhere.
 - Cost: free, no account, no tracking. Licence: MIT. Made by seatofthepants.net Ltd.
 ${llmsBeta}
 ## Links
-- [Download the current release${version ? ` (${version})` : ""}](${downloadUrl})${betaIsCurrent ? `\n- [Download the beta (${beta.version})](${betaDownloadUrl})\n- [Beta page](${SITE}/beta/)` : ""}
+- [Download the current release${version ? ` (${version})` : ""}](${downloadUrl})${betaIsCurrent ? `\n- [Download the beta (${beta.version})](${betaDownloadUrl})` : ""}
 - [Source code](${REPO})
 - [Report a problem](${REPO}/issues)
 - [HMRC's help page on the issue](${HMRC_HELP})
@@ -736,14 +569,10 @@ ${llmsBeta}
 `;
 
 const llmsFull = `${llms}
-## Common questions (current release)
+## Common questions
 
 ${faqMarkdown(faq, `${SITE}/`)}
-${betaIsCurrent ? `
-## Common questions (beta)
-
-${faqMarkdown(betaFaq, `${SITE}/beta/`)}
-` : ""}`;
+`;
 const robots = `User-agent: *\nAllow: /\nDisallow: /stats/\n\nSitemap: ${SITE}/sitemap.xml\n`;
 const sitemap = `<?xml version="1.0" encoding="UTF-8"?>
 <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">

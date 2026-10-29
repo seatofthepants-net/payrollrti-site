@@ -21,16 +21,13 @@ npx serve dist                  # or any static file server
 | `scripts/sources/` | Hand-taken screenshots `scripts/images.py` makes images from (the DMG window, the engine choice screen). |
 | `src/_headers` | Security headers (strict CSP), caching, `noindex` on `/stats/`, `/beta/` and `*.pages.dev`. |
 | `data/faq.json` | FAQ questions and answers. Used for both the visible FAQ and the structured data, so they can't drift apart. |
-| `data/beta-faq.json` | The same, for `/beta/`. |
 | `data/releases.json`, `data/prereleases.json`, `data/stats.json`, `data/downloads.csv` | Written by the data Action. Don't edit by hand. |
 
-Pages: `/`, `/releases/`, `/beta/` (unlisted, not indexed), `/stats/` (unlisted), `/404.html`, plus `/llms.txt`, `/robots.txt`, `/sitemap.xml`, `/stats.json`.
+Pages: `/`, `/releases/`, `/beta/` (unlisted, not indexed), `/stats/` (unlisted), `/404.html`, plus `/llms.txt`, `/llms-full.txt`, `/robots.txt`, `/sitemap.xml`, `/stats.json`.
 
 ## The beta page
 
-`/beta/` is the next version of the home page, for testers of the newest GitHub pre-release (a tag like `v0.2.0-beta.1`). Its download button points at that pre-release's `.dmg`; until one exists it links to the releases list. Pre-releases never become the main site's download and don't count in the download numbers.
-
-To promote it when the release ships: move the beta page's sections into the home page in `scripts/build.mjs`, replace `data/faq.json` with `data/beta-faq.json`, drop the beta bar and the `noindex`, and update `llms.txt` and the home page's structured data to match.
+`/beta/` offers the newest GitHub pre-release (a tag like `v0.3.0-beta.1`) while it's newer than the latest release, with its download and a link to its notes; otherwise it says there's no beta and links to the latest release. `llms.txt` adds a beta section on the same rule. Pre-releases never become the main site's download and don't count in the download numbers.
 
 ## Releases and download numbers
 
