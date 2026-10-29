@@ -526,12 +526,12 @@ ${beta?.dmg ? `<a class="btn btn-ghost" href="${esc(betaNotesUrl)}">Beta notes o
 <p class="sub">This is a beta. Five habits keep your payroll safe while you try it.</p>
 <ol class="care">
 <li><strong>Back up before you start.</strong> In Basic PAYE Tools, choose Backup your data, and keep a copy off your Mac, on a USB stick or in cloud storage.</li>
-<li><strong>PayrollRTI backs up too.</strong> Before it downloads the Linux version, and before any update that changes your data, it saves a backup in <code>~/HMRC/payetools-rti/backups</code>. Restore your data in Basic PAYE Tools can read them.</li>
+<li><strong>PayrollRTI backs up too.</strong> Before it downloads the Linux version, and before any update that changes your data, it saves a backup in <code>~/HMRC/payetools-rti/backups</code>. You can always restore your data from these in Basic PAYE Tools.</li>
 <li><strong>Updates only go forward.</strong> A newer Basic PAYE Tools updates your payroll data when it first starts, and older versions can’t open it afterwards. PayrollRTI checks first and won’t start a copy that’s too old.</li>
 <li><strong>Match versions before you switch back.</strong> If the Linux version moves to a new release, install the same release of HMRC’s Mac app from GOV.UK before you switch to it.</li>
 <li><strong>Run Basic PAYE Tools one way at a time.</strong> Don’t use HMRC’s Terminal workaround or another copy of Basic PAYE Tools while PayrollRTI is running it.</li>
 </ol>
-<div class="callout"><p><strong>If something looks wrong, stop and keep your backups.</strong> <a href="${REPO}/issues">Report it on GitHub</a>, and restore your last good backup with Restore your data in Basic PAYE Tools. For questions about your payroll itself, contact HMRC.</p></div>
+<div class="callout"><p><strong>If something looks wrong, stop and keep your backups.</strong> <a href="${REPO}/issues">Report it on GitHub</a>, and restore your last good backup in Basic PAYE Tools. For questions about your payroll itself, contact HMRC.</p></div>
 </div>
 </section>
 
@@ -696,7 +696,7 @@ const llmsBeta = betaIsCurrent ? `
 - No Rosetta needed, so it is designed to keep working on macOS 28 and later, when Apple will remove Rosetta for apps.
 - Same screens, same calculations, same submissions to HMRC. Tested by the developer with real backups restored, P60s produced, and live submissions accepted by HMRC (a NINO verification request and a Full Payment Submission); a month's pay run gave identical submissions from both engines.
 - Both engines use the same payroll data in ~/HMRC/payetools-rti. Switching between engines of the same Basic PAYE Tools version is a restart. A newer version updates the database when it first starts; older versions can't open it afterwards, and PayrollRTI refuses to start a copy that is too old.
-- Backups: PayrollRTI saves a backup in Basic PAYE Tools' own format before downloading the Linux version and before starting a version that will update the database, in ~/HMRC/payetools-rti/backups. Basic PAYE Tools' "Restore your data" can read them.
+- Backups: PayrollRTI saves a backup in Basic PAYE Tools' own format before downloading the Linux version and before starting a version that will update the database, in ~/HMRC/payetools-rti/backups. You can always restore your data from these in Basic PAYE Tools.
 - Updates: PayrollRTI checks HMRC's own update feed. On the Linux engine it downloads new Basic PAYE Tools versions itself; on the Mac app engine it links to GOV.UK. PayrollRTI also updates itself from GitHub releases, and beta builds are offered later betas.
 - Needs an Apple silicon Mac (M1 or later) for the Linux engine. Intel Macs keep using HMRC's Mac app, which runs on them without Rosetta.
 - Beta advice: back up in Basic PAYE Tools first and keep a copy off the Mac; updates only go forward; install the matching version of HMRC's Mac app before switching back to it; run Basic PAYE Tools one way at a time.
