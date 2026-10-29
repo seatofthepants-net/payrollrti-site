@@ -53,6 +53,8 @@ function inline(md) {
   s = s.replace(/(^|[\s(])(https?:\/\/[^\s<]*[^\s<.,;:)])/g, '$1<a href="$2">$2</a>');
   return s;
 }
+// GitHub's "Full changelog" line links to the commit diff, which means nothing to someone running payroll.
+const withoutDiffLinks = (md) => String(md || "").split("\n").filter((line) => !/\/compare\/[^\s)]*\.\.\./.test(line)).join("\n");
 // Small Markdown subset for GitHub release notes: headings, lists, paragraphs, links, bold, code.
 function markdown(md) {
   const out = [];
@@ -442,7 +444,7 @@ const releaseHtml = releases.length
 <div class="left"><h2 id="r-${i}">Version ${esc(r.version)}</h2>${i === 0 ? '<span class="badge">Latest</span>' : ""}</div>
 <time datetime="${esc(r.published_at)}">${longDate(r.published_at)}</time>
 </div>
-<div class="notes">${markdown(r.body) || "<p>No notes for this release.</p>"}</div>
+<div class="notes">${markdown(withoutDiffLinks(r.body)) || "<p>No notes for this release.</p>"}</div>
 ${i === 0 && r.dmg ? `<a class="btn btn-gold btn-sm" href="${esc(r.dmg.url)}">${ICON_DOWNLOAD}Download this version</a>\n` : ""}<p class="more"><a href="${esc(r.html_url)}">See this release on GitHub</a></p>
 </article>`).join("\n")
   : `<div class="empty"><p>Release notes will appear here shortly. In the meantime, <a href="${REPO}/releases">see all releases on GitHub</a>.</p></div>`;
