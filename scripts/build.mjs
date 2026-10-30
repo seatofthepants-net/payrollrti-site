@@ -1,6 +1,7 @@
 #!/usr/bin/env node
 // Builds the static site into dist/ from src/ and data/. No dependencies.
 //   node scripts/build.mjs
+import { execFileSync } from "node:child_process";
 import { createHash } from "node:crypto";
 import { cpSync, existsSync, mkdirSync, readFileSync, rmSync, writeFileSync } from "node:fs";
 import { dirname, join } from "node:path";
@@ -31,6 +32,17 @@ const version = latest?.version || null;
 const downloadUrl = latest?.dmg?.url || LATEST_FALLBACK;
 const releaseUrl = latest?.html_url || LATEST_FALLBACK;
 const today = new Date().toISOString().slice(0, 10);
+// The day of the last commit that changed these paths, so the sitemap only moves when the page does.
+// Needs full history (the deploy checks out with fetch-depth: 0); outside git it falls back to today.
+function lastCommitDay(paths) {
+  try {
+    return execFileSync("git", ["log", "-1", "--format=%cs", "--", ...paths], { cwd: ROOT, encoding: "utf8", stdio: ["ignore", "pipe", "ignore"] }).trim() || today;
+  } catch {
+    return today;
+  }
+}
+const latestDay = (latest?.published_at || new Date().toISOString()).slice(0, 10);
+const homeChanged = [lastCommitDay(["scripts/build.mjs", "data/faq.json", "src"]), latestDay].sort().at(-1);
 
 // ---------- helpers ----------
 const esc = (s) => String(s ?? "").replace(/[&<>"']/g, (c) => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" })[c]);
@@ -578,8 +590,8 @@ ${faqMarkdown(faq, `${SITE}/`)}
 const robots = `User-agent: *\nAllow: /\nDisallow: /stats/\n\nSitemap: ${SITE}/sitemap.xml\n`;
 const sitemap = `<?xml version="1.0" encoding="UTF-8"?>
 <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
-<url><loc>${SITE}/</loc><lastmod>${today}</lastmod></url>
-<url><loc>${SITE}/releases/</loc><lastmod>${(latest?.published_at || new Date().toISOString()).slice(0, 10)}</lastmod></url>
+<url><loc>${SITE}/</loc><lastmod>${homeChanged}</lastmod></url>
+<url><loc>${SITE}/releases/</loc><lastmod>${latestDay}</lastmod></url>
 </urlset>
 `;
 
