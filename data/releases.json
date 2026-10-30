@@ -1,5 +1,18 @@
 [
   {
+    "tag": "v0.2.1",
+    "version": "0.2.1",
+    "name": "PayrollRTI 0.2.1",
+    "published_at": "2026-10-30T14:00:42Z",
+    "html_url": "https://github.com/seatofthepants-net/payrollrti/releases/tag/v0.2.1",
+    "body": "## What's changed\n\n- Print, Reload, Back, Forward and Zoom act on the pop-up window when it's in front (f3c573f)\n- Link the website from the top of the README (ef6616a)\n- rehost: the notarised release with the embedded runtime has shipped (0.2.0-beta.1) (2b8497a)\n- Release notes run from the previous release, skipping pre-releases (1fbabe5)\n\nRuns HMRC's free [Basic PAYE Tools](https://www.gov.uk/basic-paye-tools): either their Mac installer in /Applications, or their Linux build, which PayrollRTI downloads and runs natively on Apple silicon.\n\n**Full changelog:** https://github.com/seatofthepants-net/payrollrti/compare/v0.2.0...v0.2.1\n",
+    "dmg": {
+      "name": "PayrollRTI-0.2.1.dmg",
+      "url": "https://github.com/seatofthepants-net/payrollrti/releases/download/v0.2.1/PayrollRTI-0.2.1.dmg",
+      "size": 11401253
+    }
+  },
+  {
     "tag": "v0.2.0",
     "version": "0.2.0",
     "name": "PayrollRTI 0.2.0",
