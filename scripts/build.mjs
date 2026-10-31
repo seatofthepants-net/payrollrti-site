@@ -19,6 +19,7 @@ const HMRC_HELP = "https://www.gov.uk/government/publications/basic-paye-tools-s
 const HMRC_BPT = "https://www.gov.uk/basic-paye-tools";
 const SOTP = "https://seatofthepants.net";
 const APPLE_THREAD = "https://discussions.apple.com/thread/256362758";
+const ANGUS_POST = "https://angusforrest.com/posts/reverse-engineering-hmrc-basic-paye-tools";
 
 const readJSON = (f) => JSON.parse(readFileSync(join(DATA, f), "utf8"));
 const releases = readJSON("releases.json");
@@ -409,6 +410,13 @@ ${renderFaq(faq)}
 </div>
 </section>
 
+<section class="section section-alt" id="thanks" aria-labelledby="thanks-title">
+<div class="wrap narrow">
+<h2 class="h2" id="thanks-title">With thanks to Angus Forrest</h2>
+<p class="thanks">Running HMRC’s Linux version on a Mac started with Angus Forrest’s write-up, <a href="${ANGUS_POST}">Run Basic PAYE Tools on MacOS</a>. He took HMRC’s Mac and Linux builds apart and showed that they are the same Python and Django program in different packaging, that the Linux build’s server runs on its own, and how Basic PAYE Tools finds HMRC’s updates. PayrollRTI builds on that work to run the Linux version natively on Apple silicon.</p>
+</div>
+</section>
+
 <section class="cta" aria-labelledby="cta-title">
 <div class="wrap">
 <h2 class="h2" id="cta-title">Get back to running payroll</h2>
@@ -559,6 +567,7 @@ ${version ? `
 - Install PayrollRTI, then double-click it: it starts Basic PAYE Tools' background service, opens Basic PAYE Tools in its own Mac window, and stops the service cleanly on quit. No Terminal.
 - Two ways to run Basic PAYE Tools, chosen when PayrollRTI first opens and changeable any time in Settings: HMRC's Linux version run natively by PayrollRTI (recommended on Apple silicon), or HMRC's Mac app installed from GOV.UK.
 - HMRC's Linux version: PayrollRTI downloads HMRC's Linux build from GOV.UK (about 190 MB), unpacks it, and runs it on a native Apple silicon Python runtime built into the app. It is the same Basic PAYE Tools program as the Mac app, packaged differently. HMRC's files are not modified or redistributed. No Rosetta needed, so it is designed to keep working on macOS 28 and later, when Apple will remove Rosetta for apps.
+- The Linux version builds on Angus Forrest's analysis of Basic PAYE Tools (${ANGUS_POST}), which showed the Mac and Linux builds are the same Python and Django program in different packaging and that the Linux server runs on its own.
 - HMRC's Mac app: runs on Intel Macs natively and on Apple silicon through Rosetta, which PayrollRTI can install while Apple still offer it.
 - Same screens, same calculations, same submissions to HMRC either way. Tested by the developer with real backups restored, P60s produced, and live submissions accepted by HMRC (a NINO verification request and a Full Payment Submission); a month's pay run gave identical submissions from both.
 - Both use the same payroll data in ~/HMRC/payetools-rti. Switching between them at the same Basic PAYE Tools version is a restart. A newer version updates the database when it first starts; older versions can't open it afterwards, and PayrollRTI refuses to start a copy that is too old.
@@ -579,6 +588,7 @@ ${llmsBeta}
 - [Get Basic PAYE Tools from GOV.UK](${HMRC_BPT})
 - [Release notes](${SITE}/releases/)
 - [Apple Support Communities thread on Basic PAYE Tools not opening](${APPLE_THREAD})
+- [Angus Forrest: Run Basic PAYE Tools on MacOS, the analysis the Linux version builds on](${ANGUS_POST})
 - [Full text, with every common question answered](${SITE}/llms-full.txt)
 `;
 
